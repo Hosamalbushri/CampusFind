@@ -1,0 +1,29 @@
+{
+    "name": "campus-find/student",
+    "description": "Laraseed Student Optional Package for CampusFind",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CampusFind\\Student\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CampusFind\\Student\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laraseed": {
+            "id": "student",
+            "type": "optional",
+            "provider": "CampusFind\\Student\\Providers\\StudentServiceProvider",
+            "concord_module": "CampusFind\\Student\\Providers\\ModuleServiceProvider"
+        }
+    }
+}

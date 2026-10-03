@@ -1,0 +1,27 @@
+{
+    "name": "campus-find/lost-and-found",
+    "description": "Laraseed LostAndFound Optional Package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "CampusFind\\LostAndFound\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CampusFind\\LostAndFound\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laraseed": {
+            "id": "lost_and_found",
+            "type": "optional",
+            "provider": "CampusFind\\LostAndFound\\Providers\\LostAndFoundServiceProvider",
+            "concord_module": "CampusFind\\LostAndFound\\Providers\\ModuleServiceProvider",
+            "requires": [
+                "student"
+            ]
+        }
+    }
+}

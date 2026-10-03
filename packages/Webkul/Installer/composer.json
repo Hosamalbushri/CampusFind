@@ -1,0 +1,29 @@
+{
+    "name": "krayin/laravel-installer",
+    "license": "MIT",
+    "description": "Installer package",
+    "authors": [
+        {
+            "name": "krayin",
+            "email": "support@krayin.com"
+        }
+    ],
+    "require": {
+        "krayin/laravel-core": "^1.0",
+        "krayin/laravel-user": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Installer\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Installer\\Providers\\InstallerServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,29 @@
+{
+    "name": "krayin/laravel-admin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jitendra Singh",
+            "email": "jitendra@webkul.com"
+        }
+    ],
+    "require": {
+        "krayin/laravel-core": "^1.0",
+        "krayin/laravel-datagrid": "^1.0",
+        "krayin/laravel-user": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Admin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Admin\\Providers\\AdminServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}
