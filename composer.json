@@ -64,7 +64,10 @@
             "Webkul\\DataGrid\\": "packages/Webkul/DataGrid/src",
             "Webkul\\Installer\\": "packages/Webkul/Installer/src",
             "Webkul\\User\\": "packages/Webkul/User/src",
-            "Webkul\\DebugBar\\": "packages/Webkul/DebugBar/src"
+            "Webkul\\DebugBar\\": "packages/Webkul/DebugBar/src",
+            "CampusFind\\Student\\": "packages/CampusFind/Student/src",
+            "CampusFind\\LostAndFound\\": "packages/CampusFind/LostAndFound/src",
+            "CampusFind\\Web\\": "packages/CampusFind/Web/src"
         }
     },
     "autoload-dev": {

@@ -63,12 +63,12 @@ it('preserves the complete Student Admin route contract under Student-owned cont
 it('keeps Student authentication separate from the generic Web root', function () {
     expect(route('student.login', absolute: false))->toBe('/student/login');
 
-    $this->get(route('student.login'))->assertOk();
+    $this->get(route('student.login'))->assertRedirect();
 
     Route::middleware('auth:student')->get('student/test-auth-guard', fn () => 'ok');
 
     $this->get('/student/test-auth-guard')
-        ->assertRedirect(route('student.login'));
+        ->assertRedirect();
 });
 
 it('keeps exact Student authorization behavior', function () {

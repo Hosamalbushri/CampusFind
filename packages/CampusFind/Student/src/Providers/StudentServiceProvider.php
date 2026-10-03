@@ -72,7 +72,7 @@ class StudentServiceProvider extends ServiceProvider
         app(AuthenticationRedirectResolver::class)->register(
             'student',
             fn (Request $request): bool => $request->is('student/*'),
-            fn (): string => route('student.login'),
+            fn (): string => Route::has('campusfind_web.web.login') ? route('campusfind_web.web.login') : (Route::has('student.login') ? route('student.login') : url('/login')),
             100,
         );
 

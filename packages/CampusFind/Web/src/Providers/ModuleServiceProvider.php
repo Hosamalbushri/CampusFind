@@ -1,0 +1,16 @@
+<?php
+
+namespace CampusFind\Web\Providers;
+
+use Konekt\Concord\BaseModuleServiceProvider;
+
+class ModuleServiceProvider extends BaseModuleServiceProvider
+{
+    /**
+     * Models registered by this Concord module.
+     *
+     * @var array<int, string>
+     */
+    protected $models = [
+    ];
+}

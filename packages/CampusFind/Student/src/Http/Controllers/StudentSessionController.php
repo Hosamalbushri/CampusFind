@@ -9,22 +9,55 @@ use CampusFind\Student\Services\Exceptions\UniversityApiException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Route;
 
 class StudentSessionController extends Controller
 {
     /**
-     * Show the student login / first-time registration form.
+     * Show the student login / first-time registration form (redirects to central Web portal login).
      */
-    public function create(): View|RedirectResponse
+    public function create(): RedirectResponse
     {
         if (Auth::guard('student')->check()) {
-            return redirect()->to(config('student.redirect_after_login', '/'));
+            return redirect()->to($this->determineRedirectUrl());
         }
 
         $this->captureIntendedRedirectFromQuery();
 
-        return view('student::sessions.create');
+        if (Route::has('campusfind_web.web.login')) {
+            return redirect()->route('campusfind_web.web.login');
+        }
+
+        return redirect()->to('/login');
+    }
+
+    /**
+     * Determine safe redirect URL after login.
+     */
+    protected function determineRedirectUrl(): string
+    {
+        $intended = session()->pull('url.intended');
+        $adminPath = trim((string) config('app.admin_path', 'admin'), '/');
+
+        if (is_string($intended) && $intended !== '') {
+            $parsedPath = parse_url($intended, PHP_URL_PATH);
+            $normalizedPath = trim((string) $parsedPath, '/');
+
+            if (
+                $normalizedPath !== $adminPath
+                && ! str_starts_with($normalizedPath, $adminPath . '/')
+                && $normalizedPath !== 'admin'
+                && ! str_starts_with($normalizedPath, 'admin/')
+            ) {
+                return $intended;
+            }
+        }
+
+        if (Route::has('campusfind_web.web.account.dashboard')) {
+            return route('campusfind_web.web.account.dashboard');
+        }
+
+        return config('student.redirect_after_login', '/');
     }
 
     /**
@@ -37,17 +70,35 @@ class StudentSessionController extends Controller
             return;
         }
 
+        $adminPath = trim((string) config('app.admin_path', 'admin'), '/');
+
         if (filter_var($raw, FILTER_VALIDATE_URL)) {
             $root = rtrim((string) config('app.url'), '/');
             if (str_starts_with($raw, $root)) {
-                session(['url.intended' => $raw]);
+                $path = trim((string) parse_url($raw, PHP_URL_PATH), '/');
+                if (
+                    $path !== $adminPath
+                    && ! str_starts_with($path, $adminPath . '/')
+                    && $path !== 'admin'
+                    && ! str_starts_with($path, 'admin/')
+                ) {
+                    session(['url.intended' => $raw]);
+                }
             }
 
             return;
         }
 
         if (str_starts_with($raw, '/') && ! str_starts_with($raw, '//')) {
-            session(['url.intended' => url($raw)]);
+            $path = trim($raw, '/');
+            if (
+                $path !== $adminPath
+                && ! str_starts_with($path, $adminPath . '/')
+                && $path !== 'admin'
+                && ! str_starts_with($path, 'admin/')
+            ) {
+                session(['url.intended' => url($raw)]);
+            }
         }
     }
 
@@ -75,7 +126,7 @@ class StudentSessionController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended(config('student.redirect_after_login', '/'))
+            return redirect()->to($this->determineRedirectUrl())
                 ->with('success', __('student::app.login.welcome_back'));
         }
 
@@ -100,7 +151,7 @@ class StudentSessionController extends Controller
         Auth::guard('student')->login($student, $remember);
         $request->session()->regenerate();
 
-        return redirect()->intended(config('student.redirect_after_login', '/'))
+        return redirect()->to($this->determineRedirectUrl())
             ->with('success', __('student::app.login.registered'));
     }
 
@@ -114,7 +165,12 @@ class StudentSessionController extends Controller
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 
-        return redirect()->route('student.login')
+        if (Route::has('campusfind_web.web.login')) {
+            return redirect()->route('campusfind_web.web.login')
+                ->with('success', __('student::app.login.logged_out'));
+        }
+
+        return redirect()->to('/login')
             ->with('success', __('student::app.login.logged_out'));
     }
 }

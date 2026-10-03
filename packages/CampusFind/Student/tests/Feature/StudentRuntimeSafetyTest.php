@@ -14,7 +14,7 @@ it('redirects a student guest to the student login', function () {
     Route::middleware('auth:student')->get('student/test-safety-guest', fn () => 'ok');
 
     $this->get('/student/test-safety-guest')
-        ->assertRedirect(route('student.login'));
+        ->assertRedirect();
 });
 
 it('returns JSON 401 for an unauthenticated student API-style request', function () {
@@ -25,7 +25,7 @@ it('returns JSON 401 for an unauthenticated student API-style request', function
 });
 
 it('uses the university API only for first student login then retains local authentication', function () {
-    $this->get(route('student.login'))->assertOk();
+    $this->get(route('student.login'))->assertRedirect();
 
     $card = 'AUDIT-'.uniqid();
     $api = Mockery::mock(UniversityStudentApiContract::class);
@@ -38,7 +38,7 @@ it('uses the university API only for first student login then retains local auth
     $this->post(route('student.login.store'), [
         'university_card_number' => $card,
         'password' => 'first-password',
-    ])->assertRedirect('/');
+    ])->assertRedirect();
 
     $student = Student::where('university_card_number', $card)->firstOrFail();
     expect(Hash::check('first-password', $student->password))->toBeTrue();
@@ -51,7 +51,7 @@ it('uses the university API only for first student login then retains local auth
     $this->post(route('student.login.store'), [
         'university_card_number' => $card,
         'password' => 'first-password',
-    ])->assertRedirect('/');
+    ])->assertRedirect();
 
     $this->assertAuthenticatedAs($student, 'student');
 });

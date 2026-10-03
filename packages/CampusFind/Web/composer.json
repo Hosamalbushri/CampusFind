@@ -1,0 +1,30 @@
+{
+    "name": "campus-find/web",
+    "description": "Laraseed Web Optional Package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "CampusFind\\Web\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CampusFind\\Web\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laraseed": {
+            "id": "web",
+            "type": "optional",
+            "provider": "CampusFind\\Web\\Providers\\WebServiceProvider",
+            "concord_module": "CampusFind\\Web\\Providers\\ModuleServiceProvider",
+            "capabilities": {
+                "web": {
+                    "provider": "CampusFind\\Web\\Web\\Providers\\WebServiceProvider",
+                    "enabled": true
+                }
+            }
+        }
+    }
+}
