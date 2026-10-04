@@ -12,6 +12,11 @@ return [
         'claims_review' => 'Xem xét yêu cầu nhận đồ',
         'claims_approve' => 'Phê duyệt yêu cầu nhận đồ',
         'claims_reject' => 'Từ chối yêu cầu nhận đồ',
+        'responses' => 'Found Responses',
+        'responses_view' => 'View Found Responses',
+        'responses_review' => 'Review Found Responses',
+        'responses_verify' => 'Verify Found Responses',
+        'matches' => 'Assisted Matching', 'matches_view' => 'View Match Suggestions', 'matches_generate' => 'Generate Match Suggestions', 'matches_review' => 'Review Match Suggestions',
         'custody' => 'Quản lý lưu giữ',
         'custody_manage' => 'Quản lý lưu giữ',
         'handover' => 'Quản lý bàn giao',
@@ -20,6 +25,7 @@ return [
         'settings_categories' => 'Quản lý danh mục',
     ],
     'admin' => [
+        'matches' => ['generated_success' => 'Matching completed: :evaluated evaluated, :created created, :refreshed refreshed, :unchanged unchanged, :rejected rejected.', 'reviewed_success' => 'Match suggestion review recorded.', 'verified_success' => 'The explicit relationship was verified; no handover was performed.'],
         'claims' => [
             'reviewed_success' => 'Đã xem xét yêu cầu thành công.',
             'approved_success' => 'Đã phê duyệt yêu cầu thành công.',
@@ -29,7 +35,14 @@ return [
         'items' => [
             'created_success' => 'Đã tạo đồ tìm thấy thành công.',
             'updated_success' => 'Đã cập nhật đồ tìm thấy thành công.',
+            'approved_success' => 'Đã phê duyệt và công khai báo cáo đồ tìm thấy thành công.',
+            'already_processed' => 'Mục này đã được xử lý trước đó.',
             'image_uploaded_success' => 'Đã tải ảnh lên thành công.',
+        ],
+        'reports' => [
+            'approved_success' => 'Đã phê duyệt và kích hoạt báo cáo mất đồ thành công.',
+            'rejected_success' => 'Đã từ chối và hủy báo cáo mất đồ thành công.',
+            'already_processed' => 'Báo cáo này đã được xử lý trước đó.',
         ],
         'custody' => [
             'received_success' => 'Đã tiếp nhận lưu giữ đồ thành công.',
@@ -51,6 +64,11 @@ return [
         ],
     ],
     'employee' => [
+        'matches' => [
+            'title' => 'Assisted Matching', 'disclaimer' => 'Scores are comparative ranking indicators, not ownership probabilities or verification.', 'lost_report_id' => 'Lost report ID', 'found_item_id' => 'Found item ID', 'all_statuses' => 'All statuses', 'filter' => 'Filter suggestions', 'generate_for_report' => 'Generate suggestions for this lost report', 'generate_for_item' => 'Generate suggestions for this found item', 'view_for_report' => 'View assisted matches', 'view_for_item' => 'View assisted matches', 'lost_report' => 'Lost report', 'found_item' => 'Found item', 'ranking_score' => 'Comparative ranking score', 'not_evaluated' => 'Not evaluated', 'mark_reviewed' => 'Mark reviewed', 'reject' => 'Reject suggestion', 'review_notes' => 'Review notes; required when rejecting', 'save_review' => 'Save review', 'verify_warning' => 'Verification is a separate explicit operation and does not complete handover.', 'verification_evidence' => 'Human verification evidence', 'verify_explicitly' => 'Verify explicit relationship', 'empty' => 'No match suggestions found.',
+            'statuses' => ['suggested' => 'Suggested', 'reviewed' => 'Reviewed', 'rejected' => 'Rejected', 'verified' => 'Verified relationship'], 'sorts' => ['score' => 'Highest score', 'newest' => 'Newest', 'oldest' => 'Oldest'], 'signals' => ['category' => 'Category', 'description' => 'Description', 'location' => 'Location', 'temporal' => 'Date compatibility'],
+            'explanations' => ['category_match' => 'The categories match; this alone is not proof.', 'category_mismatch' => 'The categories differ.', 'description_missing' => 'Description data is incomplete.', 'description_strong' => 'Descriptions share strong textual signals.', 'description_moderate' => 'Descriptions share some textual signals.', 'description_weak' => 'Description similarity is weak.', 'location_missing' => 'Location data is incomplete.', 'location_strong' => 'Locations are textually similar.', 'location_moderate' => 'Locations share some terms.', 'location_weak' => 'Location similarity is weak.', 'temporal_missing' => 'One or both dates are missing.', 'temporal_incompatible' => 'The item was reportedly found before it was lost.', 'temporal_strong' => 'The dates are closely compatible.', 'temporal_moderate' => 'The dates are moderately compatible.', 'temporal_weak' => 'The dates are far apart.'],
+        ],
         'claims' => [
             'title' => 'Yêu cầu nhận đồ',
             'view_claims' => 'Xem yêu cầu',
@@ -102,10 +120,38 @@ return [
                 'serial_fragment' => 'Một phần số sê-ri',
                 'container_details' => 'Chi tiết vật chứa',
             ],
+            'report_type' => 'Loại báo cáo',
+        ],
+        'reports' => [
+            'title' => 'Báo cáo mất đồ',
+            'id' => 'ID',
+            'public_reference' => 'Mã tham chiếu',
+            'title_column' => 'Tiêu đề báo cáo',
+            'category_code' => 'Danh mục',
+            'student_name' => 'Tên sinh viên',
+            'lost_location' => 'Vị trí mất',
+            'lost_at' => 'Ngày mất',
+            'status' => 'Trạng thái',
+            'created_at' => 'Ngày gửi',
+            'actions' => 'Thao tác',
+            'approve' => 'Phê duyệt',
+            'reject' => 'Từ chối',
+            'statuses' => [
+                'draft' => 'Bản nháp',
+                'active' => 'Đang hoạt động',
+                'resolved' => 'Đã giải quyết',
+                'cancelled' => 'Đã hủy',
+            ],
         ],
         'items' => [
             'title' => 'Đồ vật tìm thấy',
             'id' => 'ID',
+            'report_type' => 'Loại báo cáo',
+            'types' => [
+                'found' => 'Đồ nhặt được',
+                'lost' => 'Báo cáo mất đồ',
+                'claim' => 'Yêu cầu nhận lại',
+            ],
             'public_reference' => 'Mã tham chiếu',
             'title_column' => 'Tiêu đề',
             'category_code' => 'Danh mục',
@@ -129,6 +175,7 @@ return [
             'move_storage_title' => 'Thay đổi vị trí lưu trữ',
             'complete_handover' => 'Hoàn tất bàn giao',
             'complete_handover_title' => 'Hoàn tất bàn giao đồ vật',
+            'approve' => 'Phê duyệt và công khai',
             'actions' => 'Thao tác',
             'form' => [
                 'title' => 'Tiêu đề',

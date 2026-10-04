@@ -19,6 +19,11 @@ class UpdateFoundItemRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:2000'],
             'found_at' => ['sometimes', 'date'],
             'found_location' => ['sometimes', 'string', 'max:255'],
+            'distinguishing_marks' => ['nullable', 'string', 'max:2000'],
+            'identifying_details' => ['nullable', 'string', 'max:2000'],
+            'serial_fragment' => ['nullable', 'string', 'max:255'],
+            'staff_notes' => ['nullable', 'string', 'max:2000'],
+            'storage_location' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

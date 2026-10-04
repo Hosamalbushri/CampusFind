@@ -117,6 +117,22 @@ class StudentClaimHttpTest extends TestCase
         $this->assertSame(0, LostFoundClaim::findOrFail($response->json('data.id'))->evidence()->count());
     }
 
+    public function test_claim_on_non_claimable_item_status_is_rejected(): void
+    {
+        $student = $this->createStudent();
+        $item = $this->createFoundItem($this->createUser(), $this->createCategory());
+        $item->update(['status' => ItemStatus::RETURNED->value]);
+
+        $response = $this->actingAs($student, 'student')->postJson(route('student.lost_found.claims.store'), [
+            'found_item_id' => $item->id,
+            'statement' => 'This is already returned.',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('found_item_id');
+        $this->assertSame(0, LostFoundClaim::where('found_item_id', $item->id)->count());
+    }
+
     public function test_initial_evidence_failure_rolls_back_claim(): void
     {
         $student = $this->createStudent();

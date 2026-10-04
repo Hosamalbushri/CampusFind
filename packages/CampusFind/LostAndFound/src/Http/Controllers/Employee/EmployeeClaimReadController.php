@@ -73,11 +73,13 @@ class EmployeeClaimReadController extends Controller
             'updated_at' => $claim->updated_at,
             'is_approved_claim' => (int) $claim->approved_claim_id === (int) $claim->id,
             'evidence' => ClaimEvidence::query()->where('claim_id', $id)
-                ->orderBy('id')->get(['id', 'claim_id', 'evidence_type', 'text_value', 'submitted_at'])
+                ->orderBy('id')->get(['id', 'claim_id', 'evidence_type', 'text_value', 'file_path', 'submitted_at'])
                 ->map(static fn (ClaimEvidence $evidence): array => [
                     'id' => $evidence->id,
                     'type' => $evidence->evidence_type->value,
                     'text' => $evidence->evidence_type === EvidenceType::IMAGE_ATTACHMENT ? null : $evidence->text_value,
+                    'has_file' => (bool) $evidence->file_path,
+                    'file_url' => $evidence->file_path ? route('admin.lost_found.claims.evidence.file', [$id, $evidence->id]) : null,
                     'submitted_at' => $evidence->submitted_at?->toISOString(),
                 ])->all(),
             'reviews' => ClaimReview::query()->with('reviewer:id,name')->where('claim_id', $id)
@@ -97,6 +99,34 @@ class EmployeeClaimReadController extends Controller
         }
 
         return view('lost_found::employee.claims.show', compact('detail'));
+    }
+
+    public function evidenceFile(int $id, int $evidenceId): \Symfony\Component\HttpFoundation\Response
+    {
+        $this->authorizeRead();
+
+        $evidence = ClaimEvidence::query()
+            ->where('claim_id', $id)
+            ->where('id', $evidenceId)
+            ->firstOrFail();
+
+        if (! $evidence->file_path) {
+            abort(404, 'No file associated with this evidence.');
+        }
+
+        $diskName = (string) config('lost_found.claim_evidence_images.disk', 'lost_found_private');
+        $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+
+        if (! $disk->exists($evidence->file_path)) {
+            abort(404, 'Evidence file not found in storage.');
+        }
+
+        $headers = [
+            'Content-Type' => $evidence->mime_type ?? 'application/octet-stream',
+            'Content-Disposition' => 'inline; filename="'.($evidence->original_name ?? 'evidence-'.$evidenceId).'"',
+        ];
+
+        return $disk->response($evidence->file_path, $evidence->original_name ?? 'evidence-'.$evidenceId, $headers);
     }
 
     private function authorizeRead(): void

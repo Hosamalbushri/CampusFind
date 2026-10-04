@@ -33,13 +33,16 @@ class WebServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Blade::anonymousComponentPath(__DIR__ . '/../Resources/views/components', 'web');
         Blade::anonymousComponentPath(__DIR__ . '/../Resources/views/components', 'campusfind_web_web');
 
         if (is_dir(__DIR__ . '/../Resources/views')) {
+            $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'web');
             $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'campusfind_web_web');
         }
 
         if (is_dir(__DIR__ . '/../Resources/lang')) {
+            $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'web');
             $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'campusfind_web_web');
         }
 

@@ -14,7 +14,7 @@ return [
     ], [
         'key' => 'lost_found.items.view',
         'name' => 'lost_found::app.acl.items_view',
-        'route' => 'admin.lost_found.items.index',
+        'route' => ['admin.lost_found.items.index', 'admin.lost_found.reports.index'],
         'sort' => 1,
     ], [
         'key' => 'lost_found.items.create',
@@ -24,7 +24,14 @@ return [
     ], [
         'key' => 'lost_found.items.edit',
         'name' => 'lost_found::app.acl.items_edit',
-        'route' => ['admin.lost_found.items.edit', 'admin.lost_found.items.update', 'admin.lost_found.items.images.store'],
+        'route' => [
+            'admin.lost_found.items.edit',
+            'admin.lost_found.items.update',
+            'admin.lost_found.items.approve',
+            'admin.lost_found.items.images.store',
+            'admin.lost_found.reports.approve',
+            'admin.lost_found.reports.reject',
+        ],
         'sort' => 3,
     ], [
         'key' => 'lost_found.claims',
@@ -34,7 +41,7 @@ return [
     ], [
         'key' => 'lost_found.claims.view',
         'name' => 'lost_found::app.acl.claims_view',
-        'route' => ['admin.lost_found.claims.index', 'admin.lost_found.items.claims.index', 'admin.lost_found.claims.show'],
+        'route' => ['admin.lost_found.claims.index', 'admin.lost_found.items.claims.index', 'admin.lost_found.claims.show', 'admin.lost_found.claims.evidence.file'],
         'sort' => 1,
     ], [
         'key' => 'lost_found.claims.review',
@@ -52,10 +59,50 @@ return [
         'route' => 'admin.lost_found.claims.reject',
         'sort' => 4,
     ], [
+        'key' => 'lost_found.responses',
+        'name' => 'lost_found::app.acl.responses',
+        'route' => 'admin.lost_found.responses.index',
+        'sort' => 3,
+    ], [
+        'key' => 'lost_found.responses.view',
+        'name' => 'lost_found::app.acl.responses_view',
+        'route' => ['admin.lost_found.responses.index', 'admin.lost_found.responses.show', 'admin.lost_found.responses.images.show'],
+        'sort' => 1,
+    ], [
+        'key' => 'lost_found.responses.review',
+        'name' => 'lost_found::app.acl.responses_review',
+        'route' => ['admin.lost_found.responses.review', 'admin.lost_found.responses.reject'],
+        'sort' => 2,
+    ], [
+        'key' => 'lost_found.responses.verify',
+        'name' => 'lost_found::app.acl.responses_verify',
+        'route' => 'admin.lost_found.responses.verify',
+        'sort' => 3,
+    ], [
+        'key' => 'lost_found.matches',
+        'name' => 'lost_found::app.acl.matches',
+        'route' => 'admin.lost_found.matches.index',
+        'sort' => 4,
+    ], [
+        'key' => 'lost_found.matches.view',
+        'name' => 'lost_found::app.acl.matches_view',
+        'route' => ['admin.lost_found.matches.index', 'admin.lost_found.matches.verify'],
+        'sort' => 1,
+    ], [
+        'key' => 'lost_found.matches.generate',
+        'name' => 'lost_found::app.acl.matches_generate',
+        'route' => ['admin.lost_found.matches.generate_report', 'admin.lost_found.matches.generate_item'],
+        'sort' => 2,
+    ], [
+        'key' => 'lost_found.matches.review',
+        'name' => 'lost_found::app.acl.matches_review',
+        'route' => 'admin.lost_found.matches.review',
+        'sort' => 3,
+    ], [
         'key' => 'lost_found.custody',
         'name' => 'lost_found::app.acl.custody',
         'route' => 'admin.lost_found.custody.index',
-        'sort' => 3,
+        'sort' => 5,
     ], [
         'key' => 'lost_found.custody.manage',
         'name' => 'lost_found::app.acl.custody_manage',
@@ -65,7 +112,7 @@ return [
         'key' => 'lost_found.handover',
         'name' => 'lost_found::app.acl.handover',
         'route' => 'admin.lost_found.handover.index',
-        'sort' => 4,
+        'sort' => 6,
     ], [
         'key' => 'lost_found.handover.complete',
         'name' => 'lost_found::app.acl.handover_complete',
@@ -75,7 +122,7 @@ return [
         'key' => 'lost_found.settings',
         'name' => 'lost_found::app.acl.settings',
         'route' => 'admin.lost_found.settings.index',
-        'sort' => 5,
+        'sort' => 7,
     ], [
         'key' => 'lost_found.settings.categories',
         'name' => 'lost_found::app.acl.settings_categories',

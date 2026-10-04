@@ -4,13 +4,64 @@
 
 @font-face {
     font-family: 'Cairo';
+    src: url('../fonts/Cairo-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cairo';
+    src: url('../fonts/Cairo-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
-    --brand-color: #0E90D9;
+    --brand-color: #185c54;
+    --brand-dark: #134942;
+    --brand-mint: #e6f4ee;
 }
 
 :root,
@@ -18,16 +69,412 @@ body {
     font-family: 'Cairo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* -------------------------------- Icomoon Icons -------------------------------- */
+
+@font-face {
+    font-family: 'icomoon';
+    src: url('../fonts/icomoon.woff?w2trdd') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 @layer components {
+    .icon-image:before {
+        content: "\e956";
+    }
+      
+    .icon-bookmark:before {
+        content: "\e92c";
+    }
+
+    .icon-bookmark-active:before {
+        content: "\e92d";
+    }
+
+    .icon-stats-down:before {
+        content: "\e94d";
+    }
+
+    .icon-error:before {
+        content: "\e951";
+    }
+
+    .icon-info:before {
+        content: "\e952";
+    }
+
+    .icon-success:before {
+        content: "\e953";
+    }
+
+    .icon-warning:before {
+        content: "\e954";
+    }
+
+    .icon-stats-up:before {
+        content: "\e94f";
+    }
+
+    .icon-attribute:before {
+        content: "\e947";
+    }
+
+    .icon-download:before {
+        content: "\e948";
+    }
+
+    .icon-settings-warehouse:before {
+        content: "\e94e";
+    }
+
+    .icon-move:before {
+        content: "\e949";
+    }
+
+    .icon-organization:before {
+        content: "\e94a";
+    }
+
+    .icon-role:before {
+        content: "\e94b";
+    }
+
+    .icon-user:before {
+        content: "\e94c";
+    }
+
+    .icon-system-generate:before {
+        content: "\e950";
+    }
+
+    .icon-settings-attributes:before {
+        content: "\e93b";
+    }
+
+    .icon-settings-flow:before {
+        content: "\e93c";
+    }
+
+    .icon-settings-group:before {
+        content: "\e93d";
+    }
+
+    .icon-settings-mail:before {
+        content: "\e93e";
+    }
+
+    .icon-settings-pipeline:before {
+        content: "\e93f";
+    }
+
+    .icon-settings-roles:before {
+        content: "\e940";
+    }
+
+    .icon-settings-sources:before {
+        content: "\e941";
+    }
+
+    .icon-settings-tag:before {
+        content: "\e942";
+    }
+
+    .icon-settings-type:before {
+        content: "\e943";
+    }
+
+    .icon-settings-user:before {
+        content: "\e944";
+    }
+
+    .icon-settings-webforms:before {
+        content: "\e945";
+    }
+
+    .icon-settings-webhooks:before {
+        content: "\e946";
+    }
+
+    .icon-attached-file:before {
+        content: "\e932";
+    }
+
+    .icon-forward:before {
+        content: "\e933";
+    }
+
+    .icon-location:before {
+        content: "\e934";
+    }
+
+    .icon-pin:before {
+        content: "\e935";
+    }
+
+    .icon-print:before {
+        content: "\e936";
+    }
+
+    .icon-reply-all:before {
+        content: "\e937";
+    }
+
+    .icon-reply:before {
+        content: "\e938";
+    }
+
+    .icon-rotten:before {
+        content: "\e939";
+    }
+
+    .icon-tag:before {
+        content: "\e93a";
+    }
+
+    .icon-list:before {
+        content: "\e92e";
+    }
+
+    .icon-enter:before {
+        content: "\e92f";
+    }
+
+    .icon-kanban:before {
+        content: "\e930";
+    }
+
+    .icon-tick:before {
+        content: "\e931";
+    }
+
+    .icon-eye-hide:before {
+        content: "\e929";
+    }
+
+    .icon-percentage:before {
+        content: "\e92a";
+    }
+
+    .icon-dollar:before {
+        content: "\e92b";
+    }
+
+    .icon-radio-selected:before {
+        content: "\e924";
+    }
+
+    .icon-radio-normal:before {
+        content: "\e925";
+    }
+
+    .icon-folder:before {
+        content: "\e926";
+    }
+
+    .icon-file:before {
+        content: "\e927";
+    }
+
+    .icon-eye:before {
+        content: "\e928";
+    }
+
+    .icon-notification:before {
+        content: "\e900";
+    }
+
+    .icon-configuration:before {
+        content: "\e901";
+    }
+
+    .icon-note:before {
+        content: "\e902";
+    }
+
+    .icon-edit:before {
+        content: "\e903";
+    }
+
+    .icon-menu:before {
+        content: "\e955";
+    }
+
+    .icon-calendar:before {
+        content: "\e904";
+    }
+
+    .icon-delete:before {
+        content: "\e905";
+    }
+
+    .icon-more:before {
+        content: "\e906";
+    }
+
+    .icon-checkbox-multiple:before {
+        content: "\e907";
+    }
+
+    .icon-checkbox-select:before {
+        content: "\e908";
+    }
+
+    .icon-checkbox-outline:before {
+        content: "\e909";
+    }
+
+    .icon-message:before {
+        content: "\e90a";
+    }
+
+    .icon-video:before {
+        content: "\e90b";
+    }
+
+    .icon-attachment:before {
+        content: "\e90c";
+    }
+
+    .icon-sent:before {
+        content: "\e90d";
+    }
+
+    .icon-call:before {
+        content: "\e90e";
+    }
+
+    .icon-meeting:before {
+        content: "\e90f";
+    }
+
+    .icon-light:before {
+        content: "\e910";
+    }
+
+    .icon-dark:before {
+        content: "\e911";
+    }
+
+    .icon-mail:before {
+        content: "\e912";
+    }
+
+    .icon-leads:before {
+        content: "\e913";
+    }
+
+    .icon-filter:before {
+        content: "\e914";
+    }
+
+    .icon-setting:before {
+        content: "\e915";
+    }
+
+    .icon-product:before {
+        content: "\e916";
+    }
+
+    .icon-contact:before {
+        content: "\e917";
+    }
+
+    .icon-activity:before {
+        content: "\e918";
+    }
+
+    .icon-perosnal:before {
+        content: "\e919";
+    }
+
+    .icon-quote:before {
+        content: "\e91a";
+    }
+
+    .icon-dashboard:before {
+        content: "\e91b";
+    }
+
+    .icon-cross-large:before {
+        content: "\e91c";
+    }
+
+    .icon-left-arrow:before {
+        content: "\e91d";
+    }
+
+    .icon-right-arrow:before {
+        content: "\e91e";
+    }
+
+    .icon-up-arrow:before {
+        content: "\e91f";
+    }
+
+    .icon-down-arrow:before {
+        content: "\e920";
+    }
+
+    .icon-search:before {
+        content: "\e921";
+    }
+
+    .icon-add:before {
+        content: "\e922";
+    }
+
+    .icon-add-2:before {
+        content: "\e923";
+    }
+
+    .icon-toast-done:before {
+        content: "\e953";
+    }
+
     .primary-button {
-        @apply bg-[var(--brand-color)] border border-[var(--brand-color)] text-white cursor-pointer inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--brand-color)] focus:ring-offset-2;
+        @apply bg-[#185c54] hover:bg-[#134942] border border-[#185c54] text-white cursor-pointer inline-flex items-center justify-center font-bold px-6 py-3 rounded-xl shadow-xs transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#185c54]/50 focus:ring-offset-2;
     }
 
     .secondary-button {
-        @apply border-2 border-[var(--brand-color)] bg-transparent text-[var(--brand-color)] cursor-pointer inline-flex items-center justify-center font-semibold px-4 py-2 rounded-lg transition-all hover:bg-[var(--brand-color)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--brand-color)] focus:ring-offset-2 dark:text-white dark:border-white;
+        @apply bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-gray-100 cursor-pointer inline-flex items-center justify-center font-bold px-6 py-3 rounded-xl shadow-xs transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-gray-600 focus:ring-offset-2;
     }
 
     .transparent-button {
-        @apply inline-flex cursor-pointer items-center justify-center rounded-lg border-2 border-transparent px-3 py-1.5 font-semibold text-gray-600 transition-all hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800;
+        @apply inline-flex cursor-pointer items-center justify-center rounded-xl border border-transparent px-4 py-2 font-semibold text-slate-600 transition-all hover:bg-slate-100 focus:bg-slate-100 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800;
+    }
+
+    .refero-card {
+        @apply bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-gray-800 shadow-sm transition-all duration-200;
+    }
+
+    .refero-badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#e2f3ee] text-[#1c6453] dark:bg-emerald-950/80 dark:text-emerald-300;
     }
 }

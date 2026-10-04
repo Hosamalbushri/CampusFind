@@ -26,6 +26,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->originalTimezone = config('app.timezone');
         config()->set('app.timezone', 'UTC');
+        config()->set('cache.default', 'array');
         date_default_timezone_set('UTC');
 
         $this->originalDefaultConnection = DB::getDefaultConnection();
@@ -39,6 +40,8 @@ abstract class TestCase extends BaseTestCase
 
         DB::setDefaultConnection('web_test');
         Artisan::call('migrate', ['--database' => 'web_test', '--force' => true]);
+        Artisan::call('migrate', ['--database' => 'web_test', '--path' => 'packages/CampusFind/Student/src/Database/Migrations', '--force' => true]);
+        Artisan::call('migrate', ['--database' => 'web_test', '--path' => 'packages/CampusFind/LostAndFound/src/Database/Migrations', '--force' => true]);
     }
 
     protected function tearDown(): void

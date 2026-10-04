@@ -2,19 +2,22 @@
 
 namespace CampusFind\LostAndFound\Tests\Feature;
 
+use CampusFind\LostAndFound\Enums\ClaimStatus;
+use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
+use CampusFind\LostAndFound\Enums\FoundItemSubmissionChannel;
+use CampusFind\LostAndFound\Enums\ItemStatus;
+use CampusFind\LostAndFound\Enums\ReportStatus;
+use CampusFind\LostAndFound\Models\FoundItem;
+use CampusFind\LostAndFound\Models\LostFoundCategory;
+use CampusFind\LostAndFound\Models\LostFoundClaim;
+use CampusFind\LostAndFound\Models\LostReport;
+use CampusFind\LostAndFound\Tests\TestCase;
+use CampusFind\Student\Models\Student;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use CampusFind\LostAndFound\Tests\TestCase;
-use CampusFind\LostAndFound\Enums\ClaimStatus;
-use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
-use CampusFind\LostAndFound\Enums\ItemStatus;
-use CampusFind\LostAndFound\Models\FoundItem;
-use CampusFind\LostAndFound\Models\LostFoundCategory;
-use CampusFind\LostAndFound\Models\LostFoundClaim;
-use CampusFind\Student\Models\Student;
 use Webkul\User\Models\Role;
 use Webkul\User\Models\User;
 
@@ -104,7 +107,40 @@ class EmployeeFoundItemHttpTest extends TestCase
             'logged_by_user_id' => $user->id,
             'category_id' => $category->id,
             'status' => ItemStatus::REPORTED->value,
+            'submission_channel' => FoundItemSubmissionChannel::EMPLOYEE_ASSISTED->value,
+            'intake_employee_user_id' => $user->id,
         ]);
+    }
+
+    public function test_authenticated_employee_can_persist_private_details_and_storage_location(): void
+    {
+        $user = $this->createEmployeeWithPermissions(['lost_found.items.create']);
+        $category = $this->createCategory();
+
+        $response = $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.items.store'), [
+                'category_id' => $category->id,
+                'title' => 'Found Laptop Dell',
+                'description' => 'Dell laptop left in cafeteria',
+                'found_at' => now()->toDateString(),
+                'found_location' => 'Cafeteria',
+                'distinguishing_marks' => 'Red sticker on back cover',
+                'serial_fragment' => 'CN-0ABC12-7164',
+                'staff_notes' => 'Checked with security guard on duty',
+            ]);
+
+        $response->assertStatus(201);
+        $itemId = $response->json('data.id');
+
+        $this->assertDatabaseHas('lost_found_item_private_details', [
+            'found_item_id' => $itemId,
+        ]);
+
+        $foundItem = FoundItem::with('privateDetail')->findOrFail($itemId);
+        $this->assertNotNull($foundItem->privateDetail);
+        $this->assertSame('Red sticker on back cover', $foundItem->privateDetail->identifying_details);
+        $this->assertSame('CN-0ABC12-7164', $foundItem->privateDetail->serial_fragment);
+        $this->assertSame('Checked with security guard on duty', $foundItem->privateDetail->staff_notes);
     }
 
     public function test_unauthenticated_request_returns_redirect_or_401(): void
@@ -206,6 +242,8 @@ class EmployeeFoundItemHttpTest extends TestCase
                 'found_at' => now()->toDateString(),
                 'found_location' => 'Cafeteria',
                 'logged_by_user_id' => $user2->id,
+                'intake_employee_user_id' => $user2->id,
+                'submission_channel' => FoundItemSubmissionChannel::SYSTEM_AUTOMATION->value,
             ]);
 
         $response->assertStatus(201);
@@ -213,6 +251,8 @@ class EmployeeFoundItemHttpTest extends TestCase
 
         $item = FoundItem::findOrFail($itemId);
         $this->assertEquals($user1->id, $item->logged_by_user_id);
+        $this->assertEquals($user1->id, $item->intake_employee_user_id);
+        $this->assertSame(FoundItemSubmissionChannel::EMPLOYEE_ASSISTED, $item->submission_channel);
     }
 
     public function test_status_spoofing_in_creation_payload_is_ignored(): void
@@ -431,5 +471,80 @@ class EmployeeFoundItemHttpTest extends TestCase
             'found_item_id' => $item->id,
         ]);
         $this->assertEmpty(Storage::disk('public')->allFiles());
+    }
+
+    public function test_employee_can_approve_draft_found_item(): void
+    {
+        $user = $this->createEmployeeWithPermissions(['lost_found.items.edit']);
+        $category = $this->createCategory();
+        $item = FoundItem::create([
+            'category_id' => $category->id,
+            'logged_by_user_id' => $user->id,
+            'public_reference' => 'FI-'.strtoupper(Str::random(10)),
+            'title' => 'Draft Found Phone',
+            'found_at' => now(),
+            'found_location' => 'Library Room 2',
+            'status' => ItemStatus::DRAFT,
+        ]);
+
+        $response = $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.items.approve', $item->id));
+
+        $response->assertOk()
+            ->assertJsonPath('data.status', ItemStatus::REPORTED->value);
+
+        $this->assertSame(ItemStatus::REPORTED, $item->fresh()->status);
+
+        // Subsequent approval returns 422
+        $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.items.approve', $item->id))
+            ->assertStatus(422);
+    }
+
+    public function test_employee_can_approve_and_reject_draft_lost_report(): void
+    {
+        $user = $this->createEmployeeWithPermissions(['lost_found.items.edit']);
+        $student = $this->createStudent();
+        $category = $this->createCategory();
+
+        $reportToApprove = LostReport::create([
+            'student_id' => $student->id,
+            'category_id' => $category->id,
+            'title' => 'Draft Lost Bag',
+            'status' => ReportStatus::DRAFT,
+            'public_reference' => 'LR-'.strtoupper(Str::random(10)),
+        ]);
+
+        $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.reports.approve', $reportToApprove->id))
+            ->assertOk()
+            ->assertJsonPath('data.status', ReportStatus::ACTIVE->value);
+
+        $this->assertSame(ReportStatus::ACTIVE, $reportToApprove->fresh()->status);
+
+        // Cannot re-approve
+        $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.reports.approve', $reportToApprove->id))
+            ->assertStatus(422);
+
+        $reportToReject = LostReport::create([
+            'student_id' => $student->id,
+            'category_id' => $category->id,
+            'title' => 'Draft Lost Ring',
+            'status' => ReportStatus::DRAFT,
+            'public_reference' => 'LR-'.strtoupper(Str::random(10)),
+        ]);
+
+        $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.reports.reject', $reportToReject->id))
+            ->assertOk()
+            ->assertJsonPath('data.status', ReportStatus::CANCELLED->value);
+
+        $this->assertSame(ReportStatus::CANCELLED, $reportToReject->fresh()->status);
+
+        // Cannot re-reject
+        $this->actingAs($user, 'user')
+            ->postJson(route('admin.lost_found.reports.reject', $reportToReject->id))
+            ->assertStatus(422);
     }
 }

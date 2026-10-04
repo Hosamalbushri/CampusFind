@@ -2,6 +2,10 @@
 
 namespace CampusFind\LostAndFound\Services;
 
+use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
+use CampusFind\LostAndFound\Enums\FoundItemSubmissionChannel;
+use CampusFind\LostAndFound\Models\FoundItem;
+use CampusFind\LostAndFound\Models\FoundItemImage;
 use DomainException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -11,16 +15,13 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
-use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
-use CampusFind\LostAndFound\Models\FoundItem;
-use CampusFind\LostAndFound\Models\FoundItemImage;
 use Webkul\User\Models\User;
 
 class FoundItemImageService
 {
     public function addImage(
         FoundItem $item,
-        User $creator,
+        ?User $creator,
         FoundItemImageVisibility $visibility,
         UploadedFile $image,
         int $sortOrder = 0,
@@ -29,7 +30,7 @@ class FoundItemImageService
             throw new InvalidArgumentException('FoundItem image persistence requires a saved item.');
         }
 
-        if (! $creator->exists) {
+        if ($creator !== null && ! $creator->exists) {
             throw new InvalidArgumentException('FoundItem image persistence requires a valid creator.');
         }
 
@@ -91,6 +92,14 @@ class FoundItemImageService
                     throw new DomainException("FoundItem images cannot be added in terminal status [{$lockedItem->status->value}].");
                 }
 
+                if ($creator === null && ($visibility !== FoundItemImageVisibility::PUBLIC_SAFE
+                    || ! in_array($lockedItem->submission_channel, [
+                        FoundItemSubmissionChannel::PUBLIC_ANONYMOUS,
+                        FoundItemSubmissionChannel::STUDENT_SELF_SERVICE,
+                    ], true))) {
+                    throw new DomainException('Creator-less images are restricted to public-safe public or student intake.');
+                }
+
                 if ($lockedItem->claims()->exists()) {
                     throw new DomainException('FoundItem images cannot be mutated after a claim exists.');
                 }
@@ -109,7 +118,7 @@ class FoundItemImageService
 
                 return FoundItemImage::create([
                     'found_item_id' => $lockedItem->id,
-                    'created_by_user_id' => $creator->id,
+                    'created_by_user_id' => $creator?->id,
                     'visibility' => $visibility,
                     'storage_key' => $finalKey,
                     'mime_type' => $validated['mime'],

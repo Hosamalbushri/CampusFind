@@ -27,8 +27,8 @@ class EmployeeHandoverController extends Controller
                 $item,
                 $request->validated(),
             );
-        } catch (DomainException|InvalidArgumentException) {
-            return response()->json([], 422);
+        } catch (DomainException|InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
 
         return response()->json([

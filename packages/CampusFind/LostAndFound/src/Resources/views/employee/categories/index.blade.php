@@ -29,9 +29,7 @@
         </div>
 
         <v-lost-found-categories ref="categoryManager">
-            <x-admin::datagrid :src="route('admin.lost_found.settings.categories.index')">
-                <x-admin::shimmer.datagrid />
-            </x-admin::datagrid>
+            <x-admin::shimmer.datagrid />
         </v-lost-found-categories>
     </div>
 

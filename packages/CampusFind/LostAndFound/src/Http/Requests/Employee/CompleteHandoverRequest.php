@@ -11,6 +11,21 @@ class CompleteHandoverRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('verification_method') && $this->has('identity_verification_reference')) {
+            $this->merge([
+                'verification_method' => $this->input('identity_verification_reference'),
+            ]);
+        }
+
+        if (! $this->has('verification_note') && $this->has('notes')) {
+            $this->merge([
+                'verification_note' => $this->input('notes'),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [

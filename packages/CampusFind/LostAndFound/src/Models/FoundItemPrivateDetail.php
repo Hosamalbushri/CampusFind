@@ -9,6 +9,7 @@ class FoundItemPrivateDetail extends Model
     protected $table = 'lost_found_item_private_details';
 
     protected $fillable = [
+        'found_item_id',
         'identifying_details',
         'serial_fragment',
         'staff_notes',

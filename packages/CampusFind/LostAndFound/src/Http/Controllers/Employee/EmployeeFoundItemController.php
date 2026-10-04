@@ -3,12 +3,16 @@
 namespace CampusFind\LostAndFound\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
+use CampusFind\LostAndFound\Enums\ItemStatus;
 use CampusFind\LostAndFound\Http\Requests\Employee\StoreFoundItemRequest;
 use CampusFind\LostAndFound\Http\Requests\Employee\UpdateFoundItemRequest;
 use CampusFind\LostAndFound\Http\Requests\Employee\UploadFoundItemImageRequest;
+use CampusFind\LostAndFound\Models\FoundItem;
 use CampusFind\LostAndFound\Services\Application\EmployeeItemApplicationService;
+use CampusFind\LostAndFound\Services\Application\LostAndFoundAuthorization;
+use CampusFind\LostAndFound\Services\ItemStateService;
+use Illuminate\Http\JsonResponse;
 
 class EmployeeFoundItemController extends Controller
 {
@@ -31,6 +35,8 @@ class EmployeeFoundItemController extends Controller
                 'status' => $item->status->value,
                 'category_id' => $item->category_id,
                 'logged_by_user_id' => $item->logged_by_user_id,
+                'submission_channel' => $item->submission_channel->value,
+                'intake_employee_user_id' => $item->intake_employee_user_id,
             ],
         ], 201);
     }
@@ -76,5 +82,31 @@ class EmployeeFoundItemController extends Controller
                 'byte_size' => $image->byte_size,
             ],
         ], 201);
+    }
+
+    public function approve(int $id): JsonResponse
+    {
+        $actor = auth('user')->user();
+        LostAndFoundAuthorization::authorizeUser($actor, 'lost_found.items.edit');
+
+        $item = FoundItem::findOrFail($id);
+
+        if ($item->status !== ItemStatus::DRAFT) {
+            return response()->json([
+                'message' => trans('lost_found::app.admin.items.already_processed'),
+            ], 422);
+        }
+
+        $item->status = ItemStateService::transition($item->status, ItemStatus::REPORTED);
+        $item->reported_at = now();
+        $item->save();
+
+        return response()->json([
+            'message' => trans('lost_found::app.admin.items.approved_success'),
+            'data' => [
+                'id' => $item->id,
+                'status' => $item->status->value,
+            ],
+        ], 200);
     }
 }

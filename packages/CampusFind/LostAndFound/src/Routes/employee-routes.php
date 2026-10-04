@@ -1,17 +1,54 @@
 <?php
 
-use CampusFind\LostAndFound\Http\Controllers\EmployeeCategoryController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeClaimController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeClaimReadController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeCustodyController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeFoundItemController;
+use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeFoundResponseController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeHandoverController;
 use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeItemReadController;
+use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeMatchController;
+use CampusFind\LostAndFound\Http\Controllers\Employee\EmployeeReportReadController;
+use CampusFind\LostAndFound\Http\Controllers\EmployeeCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix(config('app.admin_path').'/lost-found')
     ->middleware(['web', 'admin_locale', 'user'])
     ->group(function () {
+        // Lost Reports Management
+        Route::get('reports', [EmployeeReportReadController::class, 'index'])
+            ->name('admin.lost_found.reports.index');
+
+        Route::post('reports/{id}/approve', [EmployeeReportReadController::class, 'approve'])
+            ->name('admin.lost_found.reports.approve');
+
+        Route::post('reports/{id}/reject', [EmployeeReportReadController::class, 'reject'])
+            ->name('admin.lost_found.reports.reject');
+
+        Route::get('responses', [EmployeeFoundResponseController::class, 'index'])
+            ->name('admin.lost_found.responses.index');
+        Route::get('responses/{id}', [EmployeeFoundResponseController::class, 'show'])
+            ->name('admin.lost_found.responses.show');
+        Route::get('responses/{id}/images/{imageId}', [EmployeeFoundResponseController::class, 'image'])
+            ->name('admin.lost_found.responses.images.show');
+        Route::post('responses/{id}/review', [EmployeeFoundResponseController::class, 'review'])
+            ->name('admin.lost_found.responses.review');
+        Route::post('responses/{id}/reject', [EmployeeFoundResponseController::class, 'reject'])
+            ->name('admin.lost_found.responses.reject');
+        Route::post('responses/{id}/verify', [EmployeeFoundResponseController::class, 'verify'])
+            ->name('admin.lost_found.responses.verify');
+
+        Route::get('matches', [EmployeeMatchController::class, 'index'])
+            ->name('admin.lost_found.matches.index');
+        Route::post('reports/{id}/matches/generate', [EmployeeMatchController::class, 'generateForReport'])
+            ->name('admin.lost_found.matches.generate_report');
+        Route::post('items/{id}/matches/generate', [EmployeeMatchController::class, 'generateForItem'])
+            ->name('admin.lost_found.matches.generate_item');
+        Route::post('matches/{id}/review', [EmployeeMatchController::class, 'review'])
+            ->name('admin.lost_found.matches.review');
+        Route::post('matches/{id}/verify', [EmployeeMatchController::class, 'verify'])
+            ->name('admin.lost_found.matches.verify');
+
         // Found Items Management
         Route::get('items', [EmployeeItemReadController::class, 'index'])
             ->name('admin.lost_found.items.index');
@@ -21,6 +58,9 @@ Route::prefix(config('app.admin_path').'/lost-found')
 
         Route::put('items/{id}', [EmployeeFoundItemController::class, 'update'])
             ->name('admin.lost_found.items.update');
+
+        Route::post('items/{id}/approve', [EmployeeFoundItemController::class, 'approve'])
+            ->name('admin.lost_found.items.approve');
 
         Route::post('items/{id}/images', [EmployeeFoundItemController::class, 'uploadImage'])
             ->name('admin.lost_found.items.images.store');
@@ -48,6 +88,9 @@ Route::prefix(config('app.admin_path').'/lost-found')
 
         Route::get('claims/{id}', [EmployeeClaimReadController::class, 'show'])
             ->name('admin.lost_found.claims.show');
+
+        Route::get('claims/{id}/evidence/{evidenceId}/file', [EmployeeClaimReadController::class, 'evidenceFile'])
+            ->name('admin.lost_found.claims.evidence.file');
 
         Route::post('claims/{id}/review', [EmployeeClaimController::class, 'review'])
             ->name('admin.lost_found.claims.review');

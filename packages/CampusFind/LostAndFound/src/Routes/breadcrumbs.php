@@ -15,6 +15,17 @@ Breadcrumbs::for('admin.lost_found.claims.index', function (BreadcrumbTrail $tra
     $trail->push(trans('lost_found::app.employee.claims.title'), route('admin.lost_found.claims.index'));
 });
 
+// Dashboard > Lost & Found Reports
+Breadcrumbs::for('admin.lost_found.reports.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push(trans('lost_found::app.employee.reports.title'), route('admin.lost_found.reports.index'));
+});
+
+Breadcrumbs::for('admin.lost_found.matches.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push(trans('lost_found::app.employee.matches.title'), route('admin.lost_found.matches.index'));
+});
+
 // Dashboard > Lost & Found Items > Claims
 Breadcrumbs::for('admin.lost_found.items.claims.index', function (BreadcrumbTrail $trail, $itemId) {
     $trail->parent('admin.lost_found.items.index');

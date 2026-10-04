@@ -1,10 +1,69 @@
 /**
- * Laraseed Web Starter — Frontend Controller & Accessibility Kernel
+ * This will track all the images and fonts for publishing.
+ */
+import.meta.glob(["../images/**", "../fonts/**"]);
+
+/**
+ * Main vue bundler for CampusFind Web package.
+ */
+import { createApp } from "vue/dist/vue.esm-bundler";
+
+/**
+ * Plugins.
+ */
+import Axios from "./plugins/axios";
+import Emitter from "./plugins/emitter";
+import Flatpickr from "./plugins/flatpickr";
+import Web from "./plugins/web";
+import VeeValidate from "./plugins/vee-validate";
+
+/**
+ * Main root application registry for Web.
+ */
+window.app = createApp({
+    data() {
+        return {
+            isMobileMenuActive: false,
+        };
+    },
+
+    methods: {
+        onSubmit() {},
+
+        onInvalidSubmit({ values, errors, results }) {
+            setTimeout(() => {
+                const errorKeys = Object.entries(errors || {})
+                    .map(([key, value]) => ({ key, value }))
+                    .filter(error => error["value"] && error["value"].length);
+
+                if (errorKeys.length > 0) {
+                    let firstErrorElement = document.querySelector('[name="' + errorKeys[0]["key"] + '"]');
+                    if (firstErrorElement) {
+                        firstErrorElement.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+                    }
+                }
+            }, 100);
+        },
+    },
+});
+
+[
+    Axios,
+    Emitter,
+    Flatpickr,
+    Web,
+    VeeValidate,
+].forEach((plugin) => app.use(plugin));
+
+/**
+ * CampusFind Web — Accessibility Kernel & Global Event Controller
  *
  * Implements strict CSP-compliant event delegation, keyboard navigation,
  * focus trapping, ARIA management, and secure cookie hygiene.
  */
-
 class WebStarterKernel {
     constructor() {
         this.focusStack = [];
@@ -20,6 +79,8 @@ class WebStarterKernel {
         this.initDarkMode();
         this.initGlobalDelegation();
         this.initKeyboardListeners();
+        this.initSearchForms();
+        this.initDisclosureState();
     }
 
     get isDarkMode() {
@@ -82,7 +143,7 @@ class WebStarterKernel {
                 return;
             }
 
-            // 3. Open Modal
+            // 3. Open Modal (legacy / fallback)
             const openModalBtn = e.target.closest('[data-action="open-modal"]');
             if (openModalBtn) {
                 e.preventDefault();
@@ -93,7 +154,7 @@ class WebStarterKernel {
                 return;
             }
 
-            // 4. Close Modal
+            // 4. Close Modal (legacy / fallback)
             const closeModalBtn = e.target.closest('[data-action="close-modal"], [data-dismiss="modal"]');
             if (closeModalBtn) {
                 e.preventDefault();
@@ -104,11 +165,38 @@ class WebStarterKernel {
                 return;
             }
 
-            // 5. Modal Backdrop Click
+            // 5. Modal Backdrop Click (legacy / fallback)
             const backdropModal = e.target.closest('[data-component="modal"]');
             if (backdropModal && e.target === backdropModal) {
                 this.closeModal(backdropModal.id);
+                return;
             }
+
+            // 6. Alert Dismissal
+            const dismissAlertBtn = e.target.closest('[data-action="dismiss-alert"], [data-dismiss="alert"]');
+            if (dismissAlertBtn) {
+                e.preventDefault();
+                const alertItem = dismissAlertBtn.closest('[data-component="flash-item"], [role="alert"]');
+                if (alertItem) {
+                    alertItem.style.opacity = '0';
+                    alertItem.style.transform = 'translateY(-8px)';
+                    setTimeout(() => alertItem.remove(), 200);
+                }
+                return;
+            }
+        });
+    }
+
+    initDisclosureState() {
+        document.querySelectorAll('[data-component="dropdown"]').forEach((dropdown, index) => {
+            const menu = dropdown.querySelector('[data-dropdown-menu]');
+            const trigger = dropdown.querySelector('[data-action="toggle-dropdown"] button, [data-action="toggle-dropdown"] a');
+            if (!menu || !trigger) return;
+
+            if (!menu.id) menu.id = `web-dropdown-${index + 1}`;
+            trigger.setAttribute('aria-controls', menu.id);
+            trigger.setAttribute('aria-expanded', menu.classList.contains('hidden') ? 'false' : 'true');
+            trigger.setAttribute('aria-haspopup', 'menu');
         });
     }
 
@@ -120,6 +208,7 @@ class WebStarterKernel {
         this.focusStack.push({ modalId: modal.id, trigger });
         modal.classList.remove('hidden');
         modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('overflow-hidden');
 
         const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
         if (focusable.length > 0) {
@@ -137,6 +226,10 @@ class WebStarterKernel {
 
         modal.classList.add('hidden');
         modal.setAttribute('aria-hidden', 'true');
+
+        if (!document.querySelector('[data-component="modal"]:not(.hidden)')) {
+            document.body.classList.remove('overflow-hidden');
+        }
 
         let restoreItem = null;
         for (let i = this.focusStack.length - 1; i >= 0; i--) {
@@ -212,12 +305,28 @@ class WebStarterKernel {
             }
         });
     }
+
+    initSearchForms() {
+        document.querySelectorAll('[data-unified-search-form]').forEach((form) => {
+            form.addEventListener('submit', () => {
+                const loadingState = document.querySelector('[data-unified-loading]');
+
+                if (loadingState) {
+                    loadingState.classList.remove('hidden');
+                    loadingState.classList.add('flex');
+                    loadingState.setAttribute('aria-hidden', 'false');
+                }
+
+                form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                    button.disabled = true;
+                });
+            });
+        });
+    }
 }
 
 const kernel = new WebStarterKernel();
 
 window.LaraseedWeb = kernel;
 
-export default kernel;
-
-
+export default app;

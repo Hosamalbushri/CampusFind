@@ -2,20 +2,23 @@
 
 namespace CampusFind\LostAndFound\Services;
 
+use CampusFind\LostAndFound\Enums\ClaimStatus;
+use CampusFind\LostAndFound\Enums\CustodyEventType;
+use CampusFind\LostAndFound\Enums\ItemStatus;
+use CampusFind\LostAndFound\Enums\ReportStatus;
+use CampusFind\LostAndFound\Models\CustodyRecord;
+use CampusFind\LostAndFound\Models\FoundItem;
+use CampusFind\LostAndFound\Models\Handover;
+use CampusFind\LostAndFound\Models\LostFoundClaim;
+use CampusFind\LostAndFound\Models\LostReport;
+use CampusFind\LostAndFound\Models\VerifiedReportItemLink;
+use CampusFind\Student\Models\Student;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use DomainException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use CampusFind\LostAndFound\Enums\ClaimStatus;
-use CampusFind\LostAndFound\Enums\CustodyEventType;
-use CampusFind\LostAndFound\Enums\ItemStatus;
-use CampusFind\LostAndFound\Models\CustodyRecord;
-use CampusFind\LostAndFound\Models\FoundItem;
-use CampusFind\LostAndFound\Models\Handover;
-use CampusFind\LostAndFound\Models\LostFoundClaim;
-use CampusFind\Student\Models\Student;
 use Webkul\User\Models\UserProxy;
 
 class HandoverService
@@ -114,6 +117,8 @@ class HandoverService
                 || $handedOverAt->lt($item->custody_changed_at)) {
                 throw new DomainException('Physical handover cannot predate the current custody chain.');
             }
+
+            $this->resolveVerifiedLostReport($item, $recipient, $handedOverAt);
 
             $returnedStatus = ItemStateService::transition($item->status, ItemStatus::RETURNED);
             $handover = Handover::query()->create([
@@ -217,5 +222,45 @@ class HandoverService
         if (! $staff || ! (bool) $staff->status) {
             throw new DomainException('Physical handover requires an active staff user.');
         }
+    }
+
+    private function resolveVerifiedLostReport(
+        FoundItem $item,
+        Student $recipient,
+        CarbonImmutable $handedOverAt,
+    ): void {
+        $verifiedLink = VerifiedReportItemLink::query()
+            ->where('found_item_id', $item->getKey())
+            ->lockForUpdate()
+            ->first();
+
+        if (! $verifiedLink) {
+            return;
+        }
+
+        $report = LostReport::query()->lockForUpdate()->find($verifiedLink->lost_report_id);
+
+        if (! $report
+            || (int) $verifiedLink->found_item_id !== $item->getKey()
+            || (int) $report->student_id !== $recipient->getKey()) {
+            throw new DomainException('The verified report-item relationship contradicts the approved recipient.');
+        }
+
+        if ($report->status === ReportStatus::CANCELLED || $report->status === ReportStatus::DRAFT) {
+            return;
+        }
+
+        if ($report->status === ReportStatus::RESOLVED) {
+            if ((int) $report->resolved_found_item_id !== $item->getKey()) {
+                throw new DomainException('The verified lost report was resolved by a different found item.');
+            }
+
+            return;
+        }
+
+        $report->status = ReportStateService::transition($report->status, ReportStatus::RESOLVED);
+        $report->resolved_found_item_id = $item->getKey();
+        $report->closed_at = $handedOverAt;
+        $report->save();
     }
 }

@@ -1,70 +1,125 @@
-<x-campusfind_web_web::layouts>
-    <x-campusfind_web_web::container class="max-w-4xl py-12">
+<x-web::layouts>
+    <x-web::container class="max-w-4xl py-10 sm:py-12">
         <!-- Breadcrumbs Navigation -->
-        <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
-            <a href="{{ route('campusfind_web.web.home') }}" class="hover:text-[var(--brand-color)] text-decoration-none">
-                @lang('campusfind_web_web::app.web.home')
-            </a>
-            <span>/</span>
-            <span class="font-medium text-gray-800 dark:text-gray-200 capitalize">
-                {{ trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) !== 'campusfind_web_web::app.web.' . str_replace('-', '_', $page) ? trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) : ucfirst(str_replace('-', ' ', $page)) }}
-            </span>
-        </nav>
+        <x-web::breadcrumbs
+            :items="[
+                (trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) !== 'campusfind_web_web::app.web.' . str_replace('-', '_', $page)
+                    ? trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page))
+                    : ucfirst(str_replace('-', ' ', $page))) => ''
+            ]"
+            class="mb-8"
+        />
 
         <!-- Page Content Card -->
-        <x-campusfind_web_web::card>
-            <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-6">
-                {{ trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) !== 'campusfind_web_web::app.web.' . str_replace('-', '_', $page) ? trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) : ucfirst(str_replace('-', ' ', $page)) }}
-            </h1>
+        <x-web::card variant="elevated" padding="lg">
+            <div class="border-b border-slate-100 dark:border-slate-800 pb-6 mb-8">
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {{ trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) !== 'campusfind_web_web::app.web.' . str_replace('-', '_', $page) ? trans('campusfind_web_web::app.web.' . str_replace('-', '_', $page)) : ucfirst(str_replace('-', ' ', $page)) }}
+                </h1>
+            </div>
 
-            <div class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed space-y-4">
+            <div class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed">
                 @if ($page === 'how-it-works')
-                    <div class="space-y-6">
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-blue-100 text-[var(--brand-color)] dark:bg-blue-950 dark:text-blue-400 flex items-center justify-center font-bold text-lg">
+                    <div class="grid grid-cols-1 gap-5 not-prose">
+                        <x-web::card variant="flat" padding="md" class="flex gap-4 items-start">
+                            <div class="shrink-0 h-12 w-12 rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 flex items-center justify-center font-black text-lg">
                                 1
                             </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900 dark:text-white">@lang('campusfind_web_web::app.web.browse_items')</h3>
-                                <p class="text-sm mt-1">Search the public catalog of found items using keywords, category filters, and campus location.</p>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">@lang('campusfind_web_web::app.web.browse_items')</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                                    Search the public catalog of found items using keywords, category filters, and campus location.
+                                </p>
                             </div>
-                        </div>
+                        </x-web::card>
 
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-blue-100 text-[var(--brand-color)] dark:bg-blue-950 dark:text-blue-400 flex items-center justify-center font-bold text-lg">
+                        <x-web::card variant="flat" padding="md" class="flex gap-4 items-start">
+                            <div class="shrink-0 h-12 w-12 rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 flex items-center justify-center font-black text-lg">
                                 2
                             </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900 dark:text-white">@lang('campusfind_web_web::app.web.claim_item')</h3>
-                                <p class="text-sm mt-1">Sign in with your student credentials and submit a claim with specific proof or distinctive identifying marks.</p>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">@lang('campusfind_web_web::app.web.claim_item')</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                                    Sign in with your student credentials and submit a claim with specific proof or distinctive identifying marks.
+                                </p>
                             </div>
-                        </div>
+                        </x-web::card>
 
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-blue-100 text-[var(--brand-color)] dark:bg-blue-950 dark:text-blue-400 flex items-center justify-center font-bold text-lg">
+                        <x-web::card variant="flat" padding="md" class="flex gap-4 items-start">
+                            <div class="shrink-0 h-12 w-12 rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 flex items-center justify-center font-black text-lg">
                                 3
                             </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900 dark:text-white">Review & Handover</h3>
-                                <p class="text-sm mt-1">Campus security and staff verify your claim, approve the request, and complete the physical handover securely.</p>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Review & Handover</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                                    Campus security and staff verify your claim, approve the request, and complete the physical handover securely.
+                                </p>
                             </div>
-                        </div>
+                        </x-web::card>
                     </div>
                 @elseif ($page === 'about')
-                    <p>
-                        CampusFind is the centralized lost and found management platform designed for university campuses. It streamlines the lifecycle of lost belongings from reporting to secure verification and custody return.
-                    </p>
-                    <p>
-                        Built with Laraseed modular architecture, it ensures complete security, privacy of sensitive claimant information, and high availability.
-                    </p>
+                    <div class="space-y-4 text-base">
+                        <p>
+                            CampusFind is the centralized lost and found management platform designed for university campuses. It streamlines the lifecycle of lost belongings from reporting to secure verification and custody return.
+                        </p>
+                        <p>
+                            Built with Laraseed modular architecture, it ensures complete security, privacy of sensitive claimant information, and high availability.
+                        </p>
+                    </div>
                 @elseif ($page === 'contact')
-                    <p>
-                        Need help recovering a lost item or have questions about campus custody procedures?
-                    </p>
-                    <div class="mt-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                        <p class="font-semibold text-gray-900 dark:text-white">Campus Security & Lost Property Office</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Main Administration Building, Ground Floor</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Email: lostandfound@university.edu</p>
+                    <div class="space-y-6">
+                        <p class="text-base">
+                            Need help recovering a lost item or have questions about campus custody procedures?
+                        </p>
+                        <x-web::card variant="flat" padding="md" class="not-prose">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">Campus Security & Lost Property Office</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">Main Administration Building, Ground Floor</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Email: <span class="font-bold text-[#185c54] dark:text-[#a3e4c8]">lostandfound@university.edu</span></p>
+                        </x-web::card>
+                    </div>
+                @elseif ($page === 'faq')
+                    <div class="space-y-4 not-prose">
+                        <x-web::accordion :isActive="true">
+                            <x-slot:header>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                    @lang('campusfind_web_web::app.web.how_it_works')
+                                </h3>
+                            </x-slot:header>
+
+                            <x-slot:content>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    @lang('campusfind_web_web::app.web.hero.subheadline')
+                                </p>
+                            </x-slot:content>
+                        </x-web::accordion>
+
+                        <x-web::accordion :isActive="false">
+                            <x-slot:header>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                    @lang('campusfind_web_web::app.web.browse_items')
+                                </h3>
+                            </x-slot:header>
+
+                            <x-slot:content>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    @lang('campusfind_web_web::app.web.browse.subtitle')
+                                </p>
+                            </x-slot:content>
+                        </x-web::accordion>
+
+                        <x-web::accordion :isActive="false">
+                            <x-slot:header>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                                    @lang('campusfind_web_web::app.web.hero.claim_prompt')
+                                </h3>
+                            </x-slot:header>
+
+                            <x-slot:content>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    @lang('campusfind_web_web::app.web.hero.claim_hint')
+                                </p>
+                            </x-slot:content>
+                        </x-web::accordion>
                     </div>
                 @else
                     <p>
@@ -72,6 +127,6 @@
                     </p>
                 @endif
             </div>
-        </x-campusfind_web_web::card>
-    </x-campusfind_web_web::container>
-</x-campusfind_web_web::layouts>
+        </x-web::card>
+    </x-web::container>
+</x-web::layouts>

@@ -2,7 +2,9 @@
 
 namespace CampusFind\LostAndFound\Http\Requests\Student;
 
+use CampusFind\LostAndFound\Enums\ItemStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreClaimRequest extends FormRequest
 {
@@ -14,7 +16,14 @@ class StoreClaimRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'found_item_id' => ['required', 'integer', 'exists:lost_found_items,id'],
+            'found_item_id' => [
+                'required',
+                'integer',
+                Rule::exists('lost_found_items', 'id')->whereIn('status', [
+                    ItemStatus::REPORTED->value,
+                    ItemStatus::IN_CUSTODY->value,
+                ]),
+            ],
             'statement' => ['nullable', 'string', 'max:1000'],
         ];
     }

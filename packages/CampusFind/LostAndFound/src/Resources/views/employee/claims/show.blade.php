@@ -33,36 +33,59 @@
             reject-url="{{ route('admin.lost_found.claims.reject', $detail['id']) }}"
             revoke-url="{{ route('admin.lost_found.claims.revoke', $detail['id']) }}"
             handover-url="{{ route('admin.lost_found.handover.complete', $detail['found_item']['id']) }}"
+            receive-custody-url="{{ route('admin.lost_found.custody.receive', $detail['found_item']['id']) }}"
         >
+            @php
+                $itemStatusClass = match($detail['found_item']['status'] ?? '') {
+                    'reported' => 'badge-info',
+                    'in_custody' => 'badge-warning',
+                    'handover_in_progress' => 'badge-secondary',
+                    'claimed' => 'badge-success',
+                    'disposed' => 'badge-danger',
+                    default => 'badge-secondary',
+                };
+                $claimStatusClass = match($detail['status'] ?? '') {
+                    'submitted' => 'badge-warning',
+                    'in_review', 'under_review' => 'badge-info',
+                    'approved' => 'badge-success',
+                    'rejected' => 'badge-danger',
+                    'revoked' => 'badge-secondary',
+                    default => 'badge-secondary',
+                };
+            @endphp
             <div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 dark:text-white">
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 md:grid-cols-3">
+                    <div>
+                        <span class="text-xs text-gray-500 block mb-1">@lang('lost_found::app.report_type'):</span>
+                        <span class="badge badge-sm badge-info font-medium">@lang('lost_found::app.types.claim')</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 block mb-1">@lang('lost_found::app.employee.claims.status'):</span>
+                        <span class="badge badge-sm {{ $claimStatusClass }} font-medium">{{ trans('lost_found::app.employee.claims.statuses.'.$detail['status']) }}</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 block mb-1">@lang('lost_found::app.employee.claims.item_status'):</span>
+                        <span class="badge badge-sm {{ $itemStatusClass }} font-medium">{{ trans('lost_found::app.employee.items.statuses.'.$detail['found_item']['status']) }}</span>
+                    </div>
                     <div>
                         <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.item'):</span>
-                        <p class="font-medium">
+                        <p class="font-medium mt-1">
                             <a href="{{ route('admin.lost_found.items.claims.index', $detail['found_item']['id']) }}" class="text-blue-600 hover:underline">
                                 {{ $detail['found_item']['public_reference'] }} — {{ $detail['found_item']['title'] }}
                             </a>
                         </p>
                     </div>
                     <div>
-                        <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.item_status'):</span>
-                        <p class="font-medium">{{ trans('lost_found::app.employee.items.statuses.'.$detail['found_item']['status']) }}</p>
-                    </div>
-                    <div>
-                        <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.status'):</span>
-                        <p class="font-medium">{{ trans('lost_found::app.employee.claims.statuses.'.$detail['status']) }}</p>
-                    </div>
-                    <div>
                         <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.claimant_name'):</span>
-                        <p class="font-medium">{{ $detail['claimant']['name'] }} (#{{ $detail['claimant']['id'] }})</p>
+                        <p class="font-medium mt-1">{{ $detail['claimant']['name'] }} (#{{ $detail['claimant']['id'] }})</p>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.submitted_at'):</span>
-                        <p class="font-medium">{{ $detail['submitted_at'] }}</p>
+                        <p class="font-medium mt-1">{{ $detail['submitted_at'] }}</p>
                     </div>
                     <div>
                         <span class="text-xs text-gray-500">@lang('lost_found::app.employee.claims.is_approved_claim'):</span>
-                        <p class="font-medium">{{ $detail['is_approved_claim'] ? trans('lost_found::app.employee.claims.yes') : trans('lost_found::app.employee.claims.no') }}</p>
+                        <p class="font-medium mt-1">{{ $detail['is_approved_claim'] ? trans('lost_found::app.employee.claims.yes') : trans('lost_found::app.employee.claims.no') }}</p>
                     </div>
                 </div>
 
@@ -80,6 +103,22 @@
                                 </div>
                                 @if ($evidence['text'] !== null)
                                     <p class="mt-2 whitespace-pre-wrap text-sm">{{ $evidence['text'] }}</p>
+                                @endif
+                                @if (! empty($evidence['has_file']) && ! empty($evidence['file_url']))
+                                    <div class="mt-3">
+                                        <a
+                                            href="{{ $evidence['file_url'] }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center gap-1.5 rounded bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 dark:bg-blue-900/40 dark:text-blue-300"
+                                        >
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            <span>{{ trans('lost_found::app.employee.claims.evidence_types.image_attachment') }}</span>
+                                        </a>
+                                    </div>
                                 @endif
                             </div>
                         @empty
@@ -174,6 +213,18 @@
                             @click="$refs.revokeModal.open()"
                         >
                             @lang('lost_found::app.employee.claims.revoke_btn')
+                        </button>
+                    @endif
+
+                    <!-- Receive Custody button (Required before Handover if item is not yet in custody) -->
+                    @if (bouncer()->hasPermission('lost_found.custody.manage'))
+                        <button
+                            v-if="claim.status === 'approved' && claim.found_item.status === 'reported'"
+                            type="button"
+                            class="secondary-button"
+                            @click="$refs.receiveCustodyModal.open()"
+                        >
+                            @lang('lost_found::app.employee.items.receive_custody')
                         </button>
                     @endif
 
@@ -433,13 +484,77 @@
 
                                         <x-admin::form.control-group.control
                                             type="text"
-                                            name="identity_verification_reference"
+                                            name="verification_method"
                                             rules="required|max:255"
                                             :label="trans('lost_found::app.employee.items.form.identity_verification_ref')"
                                             :placeholder="trans('lost_found::app.employee.items.form.identity_verification_ref')"
                                         />
 
-                                        <x-admin::form.control-group.error control-name="identity_verification_reference" />
+                                        <x-admin::form.control-group.error control-name="verification_method" />
+                                    </x-admin::form.control-group>
+
+                                    <x-admin::form.control-group>
+                                        <x-admin::form.control-group.label>
+                                            @lang('lost_found::app.employee.items.form.notes')
+                                        </x-admin::form.control-group.label>
+
+                                        <x-admin::form.control-group.control
+                                            type="textarea"
+                                            name="verification_note"
+                                            :label="trans('lost_found::app.employee.items.form.notes')"
+                                            rows="3"
+                                        />
+
+                                        <x-admin::form.control-group.error control-name="verification_note" />
+                                    </x-admin::form.control-group>
+                                </div>
+                            </x-slot>
+
+                            <x-slot:footer>
+                                <x-admin::button
+                                    button-type="submit"
+                                    class="primary-button justify-center"
+                                    :title="trans('lost_found::app.employee.claims.handover_btn')"
+                                    ::loading="isProcessing"
+                                    ::disabled="isProcessing"
+                                />
+                            </x-slot>
+                        </x-admin::modal>
+                    </form>
+                </x-admin::form>
+
+                <!-- Receive Custody Modal -->
+                <x-admin::form
+                    v-slot="{ meta, values, errors, handleSubmit }"
+                    as="div"
+                >
+                    <form
+                        @submit="handleSubmit($event, performReceiveCustody)"
+                        ref="receiveCustodyForm"
+                    >
+                        <x-admin::modal ref="receiveCustodyModal">
+                            <x-slot:header>
+                                <p class="text-lg font-bold text-gray-800 dark:text-white">
+                                    @lang('lost_found::app.employee.items.receive_custody_title')
+                                </p>
+                            </x-slot>
+
+                            <x-slot:content>
+                                <div class="grid gap-4">
+                                    <x-admin::form.control-group>
+                                        <x-admin::form.control-group.label class="required">
+                                            @lang('lost_found::app.employee.items.form.storage_location')
+                                        </x-admin::form.control-group.label>
+
+                                        <x-admin::form.control-group.control
+                                            type="text"
+                                            name="storage_location"
+                                            rules="required|max:255"
+                                            :label="trans('lost_found::app.employee.items.form.storage_location')"
+                                            :placeholder="trans('lost_found::app.employee.items.form.storage_location')"
+                                        />
+
+                                        <x-admin::form.control-group.error control-name="storage_location" />
                                     </x-admin::form.control-group>
 
                                     <x-admin::form.control-group>
@@ -463,7 +578,7 @@
                                 <x-admin::button
                                     button-type="submit"
                                     class="primary-button justify-center"
-                                    :title="trans('lost_found::app.employee.claims.handover_btn')"
+                                    :title="trans('lost_found::app.employee.items.receive_custody')"
                                     ::loading="isProcessing"
                                     ::disabled="isProcessing"
                                 />
@@ -488,6 +603,7 @@
                     rejectUrl: String,
                     revokeUrl: String,
                     handoverUrl: String,
+                    receiveCustodyUrl: String,
                 },
 
                 data() {
@@ -515,6 +631,10 @@
 
                     performHandover(params, { resetForm, setErrors }) {
                         this.executeAction(this.handoverUrl, new FormData(this.$refs.handoverForm), this.$refs.handoverModal, resetForm, setErrors);
+                    },
+
+                    performReceiveCustody(params, { resetForm, setErrors }) {
+                        this.executeAction(this.receiveCustodyUrl, new FormData(this.$refs.receiveCustodyForm), this.$refs.receiveCustodyModal, resetForm, setErrors);
                     },
 
                     executeAction(url, formData, modalRef, resetForm, setErrors) {

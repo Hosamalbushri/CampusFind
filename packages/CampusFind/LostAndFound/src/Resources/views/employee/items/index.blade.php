@@ -33,9 +33,7 @@
             :categories='@json($categories ?? [])'
             :staff-users='@json($staffUsers ?? [])'
         >
-            <x-admin::datagrid :src="route('admin.lost_found.items.index')">
-                <x-admin::shimmer.datagrid />
-            </x-admin::datagrid>
+            <x-admin::shimmer.datagrid />
         </v-lost-found-items>
     </div>
 
@@ -175,20 +173,6 @@
                                         <x-admin::form.control-group.error control-name="distinguishing_marks" />
                                     </x-admin::form.control-group>
 
-                                    <x-admin::form.control-group>
-                                        <x-admin::form.control-group.label>
-                                            @lang('lost_found::app.employee.items.form.storage_location')
-                                        </x-admin::form.control-group.label>
-
-                                        <x-admin::form.control-group.control
-                                            type="text"
-                                            name="storage_location"
-                                            :label="trans('lost_found::app.employee.items.form.storage_location')"
-                                            :placeholder="trans('lost_found::app.employee.items.form.storage_location')"
-                                        />
-
-                                        <x-admin::form.control-group.error control-name="storage_location" />
-                                    </x-admin::form.control-group>
                                 </div>
                             </x-slot>
 

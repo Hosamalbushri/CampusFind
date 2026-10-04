@@ -16,8 +16,6 @@
             </div>
         </div>
 
-        <x-admin::datagrid :src="route('admin.lost_found.claims.index')">
-            <x-admin::shimmer.datagrid />
-        </x-admin::datagrid>
+        <x-admin::datagrid :src="route('admin.lost_found.claims.index')" />
     </div>
 </x-admin::layouts>

@@ -2,21 +2,23 @@
     'name'     => null,
     'label'    => null,
     'required' => false,
+    'hint'     => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'space-y-1']) }}>
+<div {{ $attributes->merge(['class' => 'mb-4']) }}>
     @if ($label)
-        <label @if($name) for="{{ $name }}" @endif class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <x-web::form.control-group.label :for="$name" :required="$required">
             {{ $label }}
-            @if ($required)
-                <span class="text-red-500">*</span>
-            @endif
-        </label>
+        </x-web::form.control-group.label>
     @endif
 
     {{ $slot }}
 
-    @if ($name && isset($errors) && $errors->has($name))
-        <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $errors->first($name) }}</p>
+    @if ($hint)
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ $hint }}</p>
+    @endif
+
+    @if ($name && ! $slot->isEmpty() && ! str_contains($slot, 'v-error-message') && ! str_contains($slot, 'form.control-group.error'))
+        <x-web::form.control-group.error :name="$name" />
     @endif
 </div>

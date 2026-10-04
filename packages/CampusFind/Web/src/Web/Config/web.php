@@ -54,23 +54,33 @@ return [
             'route' => 'campusfind_web.web.items.index',
             'sort'  => 2,
         ],
+        'report_lost' => [
+            'name'  => 'campusfind_web_web::app.web.reports.report_lost',
+            'route' => 'campusfind_web.web.reports.lost',
+            'sort'  => 3,
+        ],
+        'report_found' => [
+            'name'  => 'campusfind_web_web::app.web.reports.report_found',
+            'route' => 'campusfind_web.web.reports.found',
+            'sort'  => 4,
+        ],
         'how_it_works' => [
             'name'   => 'campusfind_web_web::app.web.how_it_works',
             'route'  => 'campusfind_web.web.pages.show',
             'params' => ['page' => 'how-it-works'],
-            'sort'   => 3,
+            'sort'   => 5,
         ],
         'about' => [
             'name'   => 'campusfind_web_web::app.web.about',
             'route'  => 'campusfind_web.web.pages.show',
             'params' => ['page' => 'about'],
-            'sort'   => 4,
+            'sort'   => 6,
         ],
         'contact' => [
             'name'   => 'campusfind_web_web::app.web.contact',
             'route'  => 'campusfind_web.web.pages.show',
             'params' => ['page' => 'contact'],
-            'sort'   => 5,
+            'sort'   => 7,
         ],
     ],
 ];

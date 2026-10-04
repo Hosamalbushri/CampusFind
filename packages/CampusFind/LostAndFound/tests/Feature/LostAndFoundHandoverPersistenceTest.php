@@ -1,5 +1,22 @@
 <?php
 
+use CampusFind\LostAndFound\Enums\ClaimStatus;
+use CampusFind\LostAndFound\Enums\CustodyEventType;
+use CampusFind\LostAndFound\Enums\ItemStatus;
+use CampusFind\LostAndFound\Enums\ReportStatus;
+use CampusFind\LostAndFound\Models\FoundItem;
+use CampusFind\LostAndFound\Models\Handover;
+use CampusFind\LostAndFound\Models\LostFoundCategory;
+use CampusFind\LostAndFound\Models\LostFoundClaim;
+use CampusFind\LostAndFound\Models\LostReport;
+use CampusFind\LostAndFound\Repositories\LostFoundClaimRepository;
+use CampusFind\LostAndFound\Services\Application\EmployeeReportItemLinkApplicationService;
+use CampusFind\LostAndFound\Services\Application\StudentReportApplicationService;
+use CampusFind\LostAndFound\Services\ClaimResolutionService;
+use CampusFind\LostAndFound\Services\CustodyService;
+use CampusFind\LostAndFound\Services\HandoverService;
+use CampusFind\LostAndFound\Tests\TestCase;
+use CampusFind\Student\Models\Student;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -7,22 +24,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use CampusFind\LostAndFound\Enums\ClaimStatus;
-use CampusFind\LostAndFound\Enums\CustodyEventType;
-use CampusFind\LostAndFound\Enums\ItemStatus;
-use CampusFind\LostAndFound\Models\FoundItem;
-use CampusFind\LostAndFound\Models\Handover;
-use CampusFind\LostAndFound\Models\LostFoundCategory;
-use CampusFind\LostAndFound\Models\LostFoundClaim;
-use CampusFind\LostAndFound\Repositories\LostFoundClaimRepository;
-use CampusFind\LostAndFound\Services\ClaimResolutionService;
-use CampusFind\LostAndFound\Services\CustodyService;
-use CampusFind\LostAndFound\Services\HandoverService;
-use CampusFind\Student\Models\Student;
 use Webkul\User\Models\Role;
 use Webkul\User\Models\User;
 
-uses(\CampusFind\LostAndFound\Tests\TestCase::class, DatabaseTransactions::class);
+uses(TestCase::class, DatabaseTransactions::class);
 
 function makeHandoverUsers(int $count = 2): array
 {
@@ -106,6 +111,35 @@ function completeHandover(
     );
 }
 
+function makeHandoverLostReport(
+    Student $student,
+    ?int $categoryId,
+    ReportStatus $status,
+    string $title,
+): LostReport {
+    return LostReport::create([
+        'public_reference' => 'HANDOVER-REPORT-'.Str::random(12),
+        'student_id' => $student->id,
+        'category_id' => $categoryId,
+        'status' => $status,
+        'title' => $title,
+        'submitted_at' => $status === ReportStatus::ACTIVE ? now() : null,
+    ]);
+}
+
+function handoverReportSnapshot(array $reportIds): array
+{
+    return DB::table('lost_found_reports')
+        ->whereIn('id', $reportIds)
+        ->orderBy('id')
+        ->get([
+            'id', 'student_id', 'category_id', 'resolved_found_item_id', 'status',
+            'submitted_at', 'closed_at', 'created_at', 'updated_at',
+        ])
+        ->map(static fn ($report): array => (array) $report)
+        ->all();
+}
+
 test('handover schema is focused and later-wave tables remain absent', function () {
     expect(Schema::getColumnListing('lost_found_handovers'))->toBe([
         'id', 'found_item_id', 'claim_id', 'recipient_student_id', 'staff_user_id',
@@ -165,6 +199,140 @@ test('successful handover creates one terminal record and releases current custo
         ->and($claim->handover->is($handover))->toBeTrue()
         ->and($handover->recipient->is($student))->toBeTrue()
         ->and($handover->staff->is($staff))->toBeTrue();
+});
+
+test('handover resolves only the explicitly verified active report', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $linked = makeHandoverLostReport(
+        $student,
+        $item->category_id,
+        ReportStatus::ACTIVE,
+        'Explicitly verified lost item',
+    );
+    $unrelated = makeHandoverLostReport(
+        $student,
+        $item->category_id,
+        ReportStatus::ACTIVE,
+        'Unrelated item in the same category',
+    );
+    $unrelatedBefore = handoverReportSnapshot([$unrelated->id]);
+    $links = app(EmployeeReportItemLinkApplicationService::class);
+    $potential = $links->proposePotentialMatch($staff, $linked->id, $item->id);
+    $verified = $links->verifyPotentialMatch(
+        $staff,
+        $potential->id,
+        'Physical identifier matched private report evidence.',
+    );
+
+    expect($linked->refresh()->status)->toBe(ReportStatus::ACTIVE)
+        ->and($linked->resolved_found_item_id)->toBeNull();
+
+    $handover = completeHandover($item, $claim, $student, $staff);
+
+    expect($linked->refresh()->status)->toBe(ReportStatus::RESOLVED)
+        ->and($linked->resolved_found_item_id)->toBe($item->id)
+        ->and($linked->closed_at->equalTo($handover->handed_over_at))->toBeTrue()
+        ->and(handoverReportSnapshot([$unrelated->id]))->toBe($unrelatedBefore)
+        ->and($verified->refresh()->lost_report_id)->toBe($linked->id)
+        ->and($item->refresh()->status)->toBe(ItemStatus::RETURNED);
+});
+
+test('handover leaves a cancelled verified report unchanged', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $report = makeHandoverLostReport(
+        $student,
+        $item->category_id,
+        ReportStatus::ACTIVE,
+        'Verified report cancelled before collection',
+    );
+    $links = app(EmployeeReportItemLinkApplicationService::class);
+    $potential = $links->proposePotentialMatch($staff, $report->id, $item->id);
+    $links->verifyPotentialMatch($staff, $potential->id, 'Verified before the report was cancelled.');
+    app(StudentReportApplicationService::class)->cancelOwnLostReport($student, $report);
+    $before = handoverReportSnapshot([$report->id]);
+
+    completeHandover($item, $claim, $student, $staff);
+
+    expect(handoverReportSnapshot([$report->id]))->toBe($before)
+        ->and($report->refresh()->status)->toBe(ReportStatus::CANCELLED)
+        ->and($report->resolved_found_item_id)->toBeNull()
+        ->and($item->refresh()->status)->toBe(ItemStatus::RETURNED);
+});
+
+test('verified relationship to another student blocks contradictory handover', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $otherStudent = makeHandoverStudent();
+    $report = makeHandoverLostReport(
+        $otherStudent,
+        $item->category_id,
+        ReportStatus::ACTIVE,
+        'Report owned by another student',
+    );
+    $links = app(EmployeeReportItemLinkApplicationService::class);
+    $potential = $links->proposePotentialMatch($staff, $report->id, $item->id);
+    $links->verifyPotentialMatch($staff, $potential->id, 'Relationship conflicts with the approved claimant.');
+    $reportBefore = handoverReportSnapshot([$report->id]);
+
+    expect(fn () => completeHandover($item, $claim, $student, $staff))
+        ->toThrow(DomainException::class);
+
+    expect(Handover::query()->count())->toBe(0)
+        ->and($item->refresh()->status)->toBe(ItemStatus::IN_CUSTODY)
+        ->and(handoverReportSnapshot([$report->id]))->toBe($reportBefore);
+});
+
+test('handover leaves unrelated active reports in the same category unchanged', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $reports = [
+        makeHandoverLostReport($student, $item->category_id, ReportStatus::ACTIVE, 'Missing laptop'),
+        makeHandoverLostReport($student, $item->category_id, ReportStatus::ACTIVE, 'Missing headphones'),
+    ];
+    $reportIds = array_map(static fn (LostReport $report): int => $report->id, $reports);
+    $before = handoverReportSnapshot($reportIds);
+
+    completeHandover($item, $claim, $student, $staff);
+
+    expect(handoverReportSnapshot($reportIds))->toBe($before)
+        ->and($item->refresh()->status)->toBe(ItemStatus::RETURNED);
+});
+
+test('handover never resolves a draft report belonging to the recipient', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $draft = makeHandoverLostReport(
+        $student,
+        $item->category_id,
+        ReportStatus::DRAFT,
+        'Unsubmitted draft report',
+    );
+    $before = handoverReportSnapshot([$draft->id]);
+
+    completeHandover($item, $claim, $student, $staff);
+
+    expect(handoverReportSnapshot([$draft->id]))->toBe($before)
+        ->and($draft->refresh()->status)->toBe(ReportStatus::DRAFT)
+        ->and($draft->resolved_found_item_id)->toBeNull()
+        ->and($draft->closed_at)->toBeNull();
+});
+
+test('handover does not modify any unrelated report across students categories or states', function () {
+    [$item, $claim, $student, $staff] = makeApprovedHandoverFixture();
+    $otherStudent = makeHandoverStudent();
+    $otherCategory = LostFoundCategory::create(['code' => 'handover-other-'.Str::random(10)]);
+    $reports = [
+        makeHandoverLostReport($student, $item->category_id, ReportStatus::ACTIVE, 'Same category active'),
+        makeHandoverLostReport($student, $item->category_id, ReportStatus::DRAFT, 'Same category draft'),
+        makeHandoverLostReport($student, $otherCategory->id, ReportStatus::ACTIVE, 'Other category active'),
+        makeHandoverLostReport($student, $otherCategory->id, ReportStatus::DRAFT, 'Other category draft'),
+        makeHandoverLostReport($otherStudent, $item->category_id, ReportStatus::ACTIVE, 'Other student active'),
+    ];
+    $reportIds = array_map(static fn (LostReport $report): int => $report->id, $reports);
+    $before = handoverReportSnapshot($reportIds);
+
+    completeHandover($item, $claim, $student, $staff);
+
+    expect(handoverReportSnapshot($reportIds))->toBe($before)
+        ->and(Handover::query()->where('found_item_id', $item->id)->count())->toBe(1)
+        ->and($item->refresh()->status)->toBe(ItemStatus::RETURNED);
 });
 
 test('handover fails without an approved claim and preserves custody', function () {
@@ -279,6 +447,16 @@ test('duplicate and stale handover attempts produce one terminal outcome', funct
 
 test('item return failure rolls back handover and final custody history', function () {
     [$item, $claim, $student, $staff, $custodian] = makeApprovedHandoverFixture();
+    $report = makeHandoverLostReport(
+        $student,
+        $item->category_id,
+        ReportStatus::ACTIVE,
+        'Report preserved after transaction failure',
+    );
+    $links = app(EmployeeReportItemLinkApplicationService::class);
+    $potential = $links->proposePotentialMatch($staff, $report->id, $item->id);
+    $links->verifyPotentialMatch($staff, $potential->id, 'Verified report must roll back with handover.');
+    $reportBefore = handoverReportSnapshot([$report->id]);
     DB::unprepared(sprintf(
         "CREATE TRIGGER handover_return_failure BEFORE UPDATE OF status ON lost_found_items WHEN NEW.id = %d AND NEW.status = 'returned' BEGIN SELECT RAISE(ABORT, 'forced handover return failure'); END",
         $item->id,
@@ -296,7 +474,8 @@ test('item return failure rolls back handover and final custody history', functi
         ->and($item->current_custodian_user_id)->toBe($custodian->id)
         ->and($item->current_storage_location)->toBe('Handover Cabinet')
         ->and($item->custodyRecords()->count())->toBe(1)
-        ->and($claim->refresh()->status)->toBe(ClaimStatus::APPROVED);
+        ->and($claim->refresh()->status)->toBe(ClaimStatus::APPROVED)
+        ->and(handoverReportSnapshot([$report->id]))->toBe($reportBefore);
 });
 
 test('handover and final custody history are immutable', function () {

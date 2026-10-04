@@ -38,6 +38,10 @@ class FoundItemRepository extends Repository
         $workflowFields = [
             'approved_claim_id',
             'logged_by_user_id',
+            'submission_channel',
+            'reporter_student_id',
+            'submitted_by_student_id',
+            'intake_employee_user_id',
             'public_reference',
             'public_reference_key',
         ];

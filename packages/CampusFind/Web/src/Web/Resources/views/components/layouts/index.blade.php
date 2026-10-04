@@ -1,3 +1,7 @@
+@props([
+    'title' => null,
+])
+
 <!DOCTYPE html>
 <html
     class="{{ request()->cookie('dark_mode') ? 'dark' : '' }}"
@@ -5,9 +9,14 @@
     dir="{{ in_array(app()->getLocale(), ['fa', 'ar']) ? 'rtl' : 'ltr' }}"
 >
 <head>
+    {!! view_render_event('campusfind_web.web.layout.head.before') !!}
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-language" content="{{ app()->getLocale() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="base-url" content="{{ url()->to('/') }}">
+
     <title>{{ $title ?? trans('campusfind_web_web::app.web.title') }}</title>
 
     @stack('meta')
@@ -26,8 +35,20 @@
     @endif
 
     @stack('styles')
+
+    <style>
+        :root,
+        body {
+            font-family: 'Cairo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans', sans-serif;
+        }
+    </style>
+
+    {!! view_render_event('campusfind_web.web.layout.head.after') !!}
 </head>
+
 <body class="min-h-screen bg-gray-50 text-gray-800 antialiased transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100 flex flex-col font-cairo">
+    {!! view_render_event('campusfind_web.web.layout.body.before') !!}
+
     @if (! $assetsBuilt)
         <aside class="bg-amber-600 text-white text-sm font-semibold px-4 py-2.5 text-center shadow-md flex items-center justify-center gap-2 relative z-50" role="alert">
             <svg class="h-5 w-5 inline-block align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -38,15 +59,48 @@
     @endif
 
     <div id="app" class="flex min-h-screen flex-col">
-        <x-campusfind_web_web::layouts.header />
+        <!-- Flash Message Blade Component -->
+        <x-web::flash-group />
 
+        <!-- Confirm Modal Blade Component -->
+        <x-web::modal.confirm />
+
+        {!! view_render_event('campusfind_web.web.layout.content.before') !!}
+
+        <!-- Page Header Blade Component -->
+        <x-web::layouts.header />
+
+        <!-- Page Content -->
         <main class="flex-1">
             {{ $slot }}
         </main>
 
-        <x-campusfind_web_web::layouts.footer />
+        <!-- Page Footer Blade Component -->
+        <x-web::layouts.footer />
+
+        {!! view_render_event('campusfind_web.web.layout.content.after') !!}
     </div>
 
+    {!! view_render_event('campusfind_web.web.layout.body.after') !!}
+
     @stack('scripts')
+
+    {!! view_render_event('campusfind_web.web.layout.vue-app-mount.before') !!}
+
+    <script>
+        /**
+         * Load event, the purpose of using the event is to mount the application
+         * after all of our `Vue` components which is present in blade file have
+         * been registered in the app. No matter what `app.mount()` should be
+         * called in the last.
+         */
+        window.addEventListener("load", function() {
+            if (window.app && typeof window.app.mount === 'function') {
+                window.app.mount("#app");
+            }
+        });
+    </script>
+
+    {!! view_render_event('campusfind_web.web.layout.vue-app-mount.after') !!}
 </body>
 </html>

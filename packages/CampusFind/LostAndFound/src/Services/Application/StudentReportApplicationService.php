@@ -9,6 +9,7 @@ use CampusFind\LostAndFound\Models\LostReport;
 use CampusFind\LostAndFound\Models\LostReportImage;
 use CampusFind\LostAndFound\Repositories\LostReportRepository;
 use CampusFind\LostAndFound\Services\LostReportImageService;
+use CampusFind\LostAndFound\Services\ReportStateService;
 use CampusFind\Student\Models\Student;
 
 class StudentReportApplicationService
@@ -46,5 +47,43 @@ class StudentReportApplicationService
         LostAndFoundAuthorization::authorizeStudentOwnership($actor, $report->student_id, 'LostReport');
 
         return $this->imageService->addImage($report, $file);
+    }
+
+    public function submitOwnLostReport(Student $actor, LostReport $report): LostReport
+    {
+        LostAndFoundAuthorization::authorizeStudentOwnership($actor, $report->student_id, 'LostReport');
+
+        $toStatus = ReportStateService::transition($report->status, ReportStatus::ACTIVE);
+
+        $report->status = $toStatus;
+        $report->submitted_at = now();
+        $report->save();
+
+        return $report->refresh();
+    }
+
+    public function cancelOwnLostReport(Student $actor, LostReport $report): LostReport
+    {
+        LostAndFoundAuthorization::authorizeStudentOwnership($actor, $report->student_id, 'LostReport');
+
+        $toStatus = ReportStateService::transition($report->status, ReportStatus::CANCELLED);
+
+        $report->status = $toStatus;
+        $report->closed_at = now();
+        $report->save();
+
+        return $report->refresh();
+    }
+
+    public function resolveReport(LostReport $report, int $foundItemId): LostReport
+    {
+        $toStatus = ReportStateService::transition($report->status, ReportStatus::RESOLVED);
+
+        $report->status = $toStatus;
+        $report->resolved_found_item_id = $foundItemId;
+        $report->closed_at = now();
+        $report->save();
+
+        return $report->refresh();
     }
 }

@@ -4,9 +4,13 @@ namespace CampusFind\LostAndFound\Models;
 
 use CampusFind\LostAndFound\Contracts\FoundItem as FoundItemContract;
 use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
+use CampusFind\LostAndFound\Enums\FoundItemSubmissionChannel;
 use CampusFind\LostAndFound\Enums\ItemStatus;
+use CampusFind\LostAndFound\Services\FoundItemIdentityInvariants;
 use CampusFind\LostAndFound\Services\PublicReference;
+use CampusFind\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
+use LogicException;
 use Webkul\User\Models\UserProxy;
 
 class FoundItem extends Model implements FoundItemContract
@@ -17,6 +21,10 @@ class FoundItem extends Model implements FoundItemContract
         'public_reference',
         'category_id',
         'logged_by_user_id',
+        'submission_channel',
+        'reporter_student_id',
+        'submitted_by_student_id',
+        'intake_employee_user_id',
         'status',
         'title',
         'public_description',
@@ -27,6 +35,11 @@ class FoundItem extends Model implements FoundItemContract
 
     protected $hidden = [
         'public_reference_key',
+        'logged_by_user_id',
+        'submission_channel',
+        'reporter_student_id',
+        'submitted_by_student_id',
+        'intake_employee_user_id',
         'approved_claim_id',
         'current_custodian_user_id',
         'current_storage_location',
@@ -36,11 +49,25 @@ class FoundItem extends Model implements FoundItemContract
 
     protected $casts = [
         'status' => ItemStatus::class,
+        'submission_channel' => FoundItemSubmissionChannel::class,
         'found_at' => 'datetime',
         'reported_at' => 'datetime',
         'custody_started_at' => 'datetime',
         'custody_changed_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(static function (FoundItem $item): void {
+            FoundItemIdentityInvariants::prepareAndAssert($item);
+        });
+
+        static::updating(static function (FoundItem $item): void {
+            if ($item->isDirty(FoundItemIdentityInvariants::FIELDS)) {
+                throw new LogicException('Found-item intake identity is immutable after creation.');
+            }
+        });
+    }
 
     public function setPublicReferenceAttribute(string $value): void
     {
@@ -60,6 +87,21 @@ class FoundItem extends Model implements FoundItemContract
         return $this->belongsTo(UserProxy::modelClass(), 'logged_by_user_id');
     }
 
+    public function reporterStudent()
+    {
+        return $this->belongsTo(Student::class, 'reporter_student_id');
+    }
+
+    public function submittedByStudent()
+    {
+        return $this->belongsTo(Student::class, 'submitted_by_student_id');
+    }
+
+    public function intakeEmployee()
+    {
+        return $this->belongsTo(UserProxy::modelClass(), 'intake_employee_user_id');
+    }
+
     public function privateDetail()
     {
         return $this->hasOne(FoundItemPrivateDetail::class, 'found_item_id');
@@ -68,6 +110,21 @@ class FoundItem extends Model implements FoundItemContract
     public function resolvedLostReports()
     {
         return $this->hasMany(LostReportProxy::modelClass(), 'resolved_found_item_id');
+    }
+
+    public function potentialReportMatches()
+    {
+        return $this->hasMany(PotentialReportItemMatch::class, 'found_item_id');
+    }
+
+    public function verifiedReportLink()
+    {
+        return $this->hasOne(VerifiedReportItemLink::class, 'found_item_id');
+    }
+
+    public function sourceFoundResponse()
+    {
+        return $this->hasOne(FoundReportResponse::class, 'resulting_found_item_id');
     }
 
     public function claims()

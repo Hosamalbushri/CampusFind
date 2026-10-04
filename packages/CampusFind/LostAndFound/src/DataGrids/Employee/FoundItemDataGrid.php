@@ -77,7 +77,14 @@ class FoundItemDataGrid extends DataGrid
 
             if ($index === 'status') {
                 $column['filterable_type'] = 'dropdown';
-                $column['closure'] = static fn ($row): string => trans("lost_found::app.employee.items.statuses.{$row->status}");
+                $column['closure'] = static fn ($row): string => match ($row->status) {
+                    'draft' => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                    'reported' => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                    'in_custody' => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                    'returned' => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                    'disposed' => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                    default => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800">● '.e(trans("lost_found::app.employee.items.statuses.{$row->status}")).'</span>',
+                };
                 $column['filterable_options'] = array_map(
                     static fn (ItemStatus $status): array => [
                         'label' => trans("lost_found::app.employee.items.statuses.{$status->value}"),
@@ -88,6 +95,15 @@ class FoundItemDataGrid extends DataGrid
             }
 
             $this->addColumn($column);
+
+            if ($index === 'id') {
+                $this->addColumn([
+                    'index' => 'report_type',
+                    'label' => trans('lost_found::app.employee.items.report_type'),
+                    'type' => 'string',
+                    'closure' => static fn ($row): string => '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-[#185c54] border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">● '.e(trans('lost_found::app.employee.items.types.found')).'</span>',
+                ]);
+            }
         }
 
         $actor = $this->actor();
@@ -100,13 +116,6 @@ class FoundItemDataGrid extends DataGrid
                     'type' => $type,
                 ]);
             }
-
-            $this->addColumn([
-                'index' => 'claims_link',
-                'label' => trans('lost_found::app.employee.claims.view_claims'),
-                'type' => 'string',
-                'closure' => static fn ($row): string => '<a href="'.e(route('admin.lost_found.items.claims.index', (int) $row->id)).'">'.e(trans('lost_found::app.employee.claims.view_claims')).'</a>',
-            ]);
         }
 
         if ($this->can($actor, 'lost_found.custody.manage')) {
@@ -114,6 +123,38 @@ class FoundItemDataGrid extends DataGrid
                 'index' => 'current_custodian_name',
                 'label' => trans('lost_found::app.employee.items.current_custodian_name'),
                 'type' => 'string',
+            ]);
+        }
+    }
+
+    public function prepareActions(): void
+    {
+        $actor = $this->actor();
+
+        if ($this->can($actor, 'lost_found.matches.view')) {
+            $this->addAction([
+                'icon' => 'icon-search',
+                'title' => trans('lost_found::app.employee.matches.view_for_item'),
+                'method' => 'GET',
+                'url' => fn ($row) => route('admin.lost_found.matches.index', ['found_item_id' => (int) $row->id]),
+            ]);
+        }
+
+        if ($this->can($actor, 'lost_found.claims.view')) {
+            $this->addAction([
+                'icon' => 'icon-eye',
+                'title' => trans('lost_found::app.employee.claims.view_claims'),
+                'method' => 'GET',
+                'url' => fn ($row) => route('admin.lost_found.items.claims.index', (int) $row->id),
+            ]);
+        }
+
+        if ($this->can($actor, 'lost_found.items.edit')) {
+            $this->addAction([
+                'icon' => 'icon-tick',
+                'title' => trans('lost_found::app.employee.items.approve'),
+                'method' => 'POST',
+                'url' => fn ($row) => route('admin.lost_found.items.approve', (int) $row->id),
             ]);
         }
     }

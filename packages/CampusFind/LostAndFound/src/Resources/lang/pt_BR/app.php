@@ -12,6 +12,11 @@ return [
         'claims_review' => 'Analisar reivindicações',
         'claims_approve' => 'Aprovar reivindicações',
         'claims_reject' => 'Rejeitar reivindicações',
+        'responses' => 'Found Responses',
+        'responses_view' => 'View Found Responses',
+        'responses_review' => 'Review Found Responses',
+        'responses_verify' => 'Verify Found Responses',
+        'matches' => 'Assisted Matching', 'matches_view' => 'View Match Suggestions', 'matches_generate' => 'Generate Match Suggestions', 'matches_review' => 'Review Match Suggestions',
         'custody' => 'Gestão de custódia',
         'custody_manage' => 'Gerenciar custódia',
         'handover' => 'Gestão de entregas',
@@ -20,6 +25,7 @@ return [
         'settings_categories' => 'Gerenciar categorias',
     ],
     'admin' => [
+        'matches' => ['generated_success' => 'Matching completed: :evaluated evaluated, :created created, :refreshed refreshed, :unchanged unchanged, :rejected rejected.', 'reviewed_success' => 'Match suggestion review recorded.', 'verified_success' => 'The explicit relationship was verified; no handover was performed.'],
         'claims' => [
             'reviewed_success' => 'Reivindicação analisada com sucesso.',
             'approved_success' => 'Reivindicação aprovada com sucesso.',
@@ -29,7 +35,14 @@ return [
         'items' => [
             'created_success' => 'Item encontrado criado com sucesso.',
             'updated_success' => 'Item encontrado atualizado com sucesso.',
+            'approved_success' => 'Relatório de item encontrado aprovado e publicado com sucesso.',
+            'already_processed' => 'Este item já foi processado.',
             'image_uploaded_success' => 'Imagem enviada com sucesso.',
+        ],
+        'reports' => [
+            'approved_success' => 'Relatório de item perdido aprovado e ativado com sucesso.',
+            'rejected_success' => 'Relatório de item perdido rejeitado e cancelado com sucesso.',
+            'already_processed' => 'Este relatório já foi processado.',
         ],
         'custody' => [
             'received_success' => 'Custódia do item recebida com sucesso.',
@@ -51,6 +64,11 @@ return [
         ],
     ],
     'employee' => [
+        'matches' => [
+            'title' => 'Assisted Matching', 'disclaimer' => 'Scores are comparative ranking indicators, not ownership probabilities or verification.', 'lost_report_id' => 'Lost report ID', 'found_item_id' => 'Found item ID', 'all_statuses' => 'All statuses', 'filter' => 'Filter suggestions', 'generate_for_report' => 'Generate suggestions for this lost report', 'generate_for_item' => 'Generate suggestions for this found item', 'view_for_report' => 'View assisted matches', 'view_for_item' => 'View assisted matches', 'lost_report' => 'Lost report', 'found_item' => 'Found item', 'ranking_score' => 'Comparative ranking score', 'not_evaluated' => 'Not evaluated', 'mark_reviewed' => 'Mark reviewed', 'reject' => 'Reject suggestion', 'review_notes' => 'Review notes; required when rejecting', 'save_review' => 'Save review', 'verify_warning' => 'Verification is a separate explicit operation and does not complete handover.', 'verification_evidence' => 'Human verification evidence', 'verify_explicitly' => 'Verify explicit relationship', 'empty' => 'No match suggestions found.',
+            'statuses' => ['suggested' => 'Suggested', 'reviewed' => 'Reviewed', 'rejected' => 'Rejected', 'verified' => 'Verified relationship'], 'sorts' => ['score' => 'Highest score', 'newest' => 'Newest', 'oldest' => 'Oldest'], 'signals' => ['category' => 'Category', 'description' => 'Description', 'location' => 'Location', 'temporal' => 'Date compatibility'],
+            'explanations' => ['category_match' => 'The categories match; this alone is not proof.', 'category_mismatch' => 'The categories differ.', 'description_missing' => 'Description data is incomplete.', 'description_strong' => 'Descriptions share strong textual signals.', 'description_moderate' => 'Descriptions share some textual signals.', 'description_weak' => 'Description similarity is weak.', 'location_missing' => 'Location data is incomplete.', 'location_strong' => 'Locations are textually similar.', 'location_moderate' => 'Locations share some terms.', 'location_weak' => 'Location similarity is weak.', 'temporal_missing' => 'One or both dates are missing.', 'temporal_incompatible' => 'The item was reportedly found before it was lost.', 'temporal_strong' => 'The dates are closely compatible.', 'temporal_moderate' => 'The dates are moderately compatible.', 'temporal_weak' => 'The dates are far apart.'],
+        ],
         'claims' => [
             'title' => 'Reivindicações',
             'view_claims' => 'Ver reivindicações',
@@ -102,10 +120,38 @@ return [
                 'serial_fragment' => 'Trecho do número de série',
                 'container_details' => 'Detalhes do recipiente',
             ],
+            'report_type' => 'Tipo de Relatório',
+        ],
+        'reports' => [
+            'title' => 'Relatórios de Perda',
+            'id' => 'ID',
+            'public_reference' => 'Referência',
+            'title_column' => 'Título do Relatório',
+            'category_code' => 'Categoria',
+            'student_name' => 'Nome do Estudante',
+            'lost_location' => 'Local da Perda',
+            'lost_at' => 'Data da Perda',
+            'status' => 'Status',
+            'created_at' => 'Data de Envio',
+            'actions' => 'Ações',
+            'approve' => 'Aprovar',
+            'reject' => 'Rejeitar',
+            'statuses' => [
+                'draft' => 'Rascunho',
+                'active' => 'Ativo',
+                'resolved' => 'Resolvido',
+                'cancelled' => 'Cancelado',
+            ],
         ],
         'items' => [
             'title' => 'Itens encontrados',
             'id' => 'ID',
+            'report_type' => 'Tipo de Relatório',
+            'types' => [
+                'found' => 'Item Encontrado',
+                'lost' => 'Relatório de Perda',
+                'claim' => 'Reivindicação',
+            ],
             'public_reference' => 'Referência',
             'title_column' => 'Título',
             'category_code' => 'Categoria',
@@ -129,6 +175,7 @@ return [
             'move_storage_title' => 'Alterar local de armazenamento',
             'complete_handover' => 'Concluir entrega',
             'complete_handover_title' => 'Concluir entrega do item',
+            'approve' => 'Aprovar e publicar',
             'actions' => 'Ações',
             'form' => [
                 'title' => 'Título',

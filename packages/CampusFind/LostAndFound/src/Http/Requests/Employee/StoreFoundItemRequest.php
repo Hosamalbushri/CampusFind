@@ -19,6 +19,11 @@ class StoreFoundItemRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:2000'],
             'found_at' => ['required', 'date'],
             'found_location' => ['required', 'string', 'max:255'],
+            'distinguishing_marks' => ['nullable', 'string', 'max:2000'],
+            'identifying_details' => ['nullable', 'string', 'max:2000'],
+            'serial_fragment' => ['nullable', 'string', 'max:255'],
+            'staff_notes' => ['nullable', 'string', 'max:2000'],
+            'reporter_student_id' => ['nullable', 'integer', 'exists:students,id'],
         ];
     }
 }

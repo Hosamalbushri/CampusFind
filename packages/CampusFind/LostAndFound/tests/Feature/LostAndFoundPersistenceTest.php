@@ -1,11 +1,5 @@
 <?php
 
-use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use CampusFind\LostAndFound\Enums\ItemStatus;
 use CampusFind\LostAndFound\Enums\ReportStatus;
 use CampusFind\LostAndFound\Models\FoundItem;
@@ -14,11 +8,18 @@ use CampusFind\LostAndFound\Models\LostReport;
 use CampusFind\LostAndFound\Repositories\FoundItemRepository;
 use CampusFind\LostAndFound\Repositories\LostFoundCategoryRepository;
 use CampusFind\LostAndFound\Repositories\LostReportRepository;
+use CampusFind\LostAndFound\Tests\TestCase;
 use CampusFind\Student\Models\Student;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Webkul\User\Models\Role;
 use Webkul\User\Models\User;
 
-uses(\CampusFind\LostAndFound\Tests\TestCase::class, DatabaseTransactions::class);
+uses(TestCase::class, DatabaseTransactions::class);
 
 function createLostFoundPersistenceActors(): array
 {
@@ -73,6 +74,7 @@ test('wave one foundation remains intact beneath claim persistence', function ()
         'status', 'title', 'public_description', 'found_location', 'found_at', 'reported_at',
         'created_at', 'updated_at', 'approved_claim_id', 'current_custodian_user_id',
         'current_storage_location', 'custody_started_at', 'custody_changed_at',
+        'submission_channel', 'reporter_student_id', 'submitted_by_student_id', 'intake_employee_user_id',
     ])->and(Schema::getColumnListing('lost_found_item_private_details'))->toBe([
         'id', 'found_item_id', 'identifying_details', 'serial_fragment', 'staff_notes', 'created_at', 'updated_at',
     ])->and(Schema::getColumnListing('lost_found_reports'))->toBe([

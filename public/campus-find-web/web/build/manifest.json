@@ -1,13 +1,52 @@
 {
   "src/Web/Resources/assets/css/app.css": {
-    "file": "assets/app-DmHYRlQk.css",
+    "file": "assets/app-Cki9wEZV.css",
     "src": "src/Web/Resources/assets/css/app.css",
     "isEntry": true
   },
+  "src/Web/Resources/assets/fonts/Cairo-Black.ttf": {
+    "file": "assets/Cairo-Black-BBBecWCb.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-Black.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-Bold.ttf": {
+    "file": "assets/Cairo-Bold-CRUa7UyS.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-Bold.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-ExtraBold.ttf": {
+    "file": "assets/Cairo-ExtraBold-BOrJWdUw.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-ExtraBold.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-ExtraLight.ttf": {
+    "file": "assets/Cairo-ExtraLight-B8LDBVyd.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-ExtraLight.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-Light.ttf": {
+    "file": "assets/Cairo-Light-DijhTkuQ.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-Light.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-Medium.ttf": {
+    "file": "assets/Cairo-Medium-BVfnydw0.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-Medium.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-Regular.ttf": {
+    "file": "assets/Cairo-Regular-CvRCENXA.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-Regular.ttf"
+  },
+  "src/Web/Resources/assets/fonts/Cairo-SemiBold.ttf": {
+    "file": "assets/Cairo-SemiBold-WHNjihNv.ttf",
+    "src": "src/Web/Resources/assets/fonts/Cairo-SemiBold.ttf"
+  },
+  "src/Web/Resources/assets/fonts/icomoon.woff": {
+    "file": "assets/icomoon-BbY1GX-d.woff",
+    "src": "src/Web/Resources/assets/fonts/icomoon.woff"
+  },
   "src/Web/Resources/assets/js/app.js": {
-    "file": "assets/app-Ihqljhgo.js",
+    "file": "assets/app-DwF8JGv1.js",
     "name": "app",
     "src": "src/Web/Resources/assets/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "css": [
+      "assets/app-BsM4JrO0.css"
+    ]
   }
 }

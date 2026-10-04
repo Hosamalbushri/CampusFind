@@ -2,9 +2,11 @@
 
 namespace CampusFind\LostAndFound\Services\Application;
 
+use DomainException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use CampusFind\LostAndFound\Enums\EvidenceType;
+use CampusFind\LostAndFound\Enums\ItemStatus;
 use CampusFind\LostAndFound\Models\ClaimEvidence;
 use CampusFind\LostAndFound\Models\FoundItem;
 use CampusFind\LostAndFound\Models\LostFoundClaim;
@@ -25,6 +27,10 @@ class StudentClaimApplicationService
 
     public function submitClaim(Student $actor, FoundItem $item, array $data = []): LostFoundClaim
     {
+        if (! in_array($item->status, [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
+            throw new DomainException("Cannot submit a claim for an item in status [{$item->status->value}].");
+        }
+
         $data['claimant_student_id'] = $actor->id;
         $data['found_item_id'] = $item->id;
         unset($data['status'], $data['withdrawn_at']);

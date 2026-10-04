@@ -8,7 +8,14 @@ export default {
     theme: {
         extend: {
             colors: {
-                brandColor: "var(--brand-color, #0E90D9)",
+                brandColor: "var(--brand-color, #185c54)",
+                refero: {
+                    primary: "#185c54",
+                    dark: "#134942",
+                    mint: "#e6f4ee",
+                    mintDark: "#dff3ea",
+                    accent: "#15803d",
+                },
             },
             fontFamily: {
                 cairo: ["Cairo", "sans-serif"],

@@ -19,11 +19,25 @@ class SecurityInvariants
         'otp',
         'recovery code',
         'secret key',
+        // Arabic equivalents
+        'كلمة المرور',
+        'كلمة السر',
+        'الرقم السري',
+        'رقم سري',
+        'رمز السري',
+        'رمز الدخول',
+        'رمز التحقق',
+        'نمط القفل',
+        'رمز القفل',
+        'رمز الامان',
+        'رمز الأمان',
+        'رمز الاسترداد',
+        'مفتاح سري',
     ];
 
     public static function assertNoAuthSecrets(string $text): void
     {
-        $lowercase = strtolower($text);
+        $lowercase = mb_strtolower($text, 'UTF-8');
 
         foreach (self::PROHIBITED_KEYWORDS as $keyword) {
             if (str_contains($lowercase, $keyword)) {

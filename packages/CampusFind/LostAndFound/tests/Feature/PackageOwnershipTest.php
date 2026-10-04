@@ -2,11 +2,11 @@
 
 namespace CampusFind\LostAndFound\Tests\Feature;
 
+use CampusFind\LostAndFound\Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
-use CampusFind\LostAndFound\Tests\TestCase;
 use Webkul\User\Models\Role;
 use Webkul\User\Models\User;
 
@@ -20,8 +20,8 @@ class PackageOwnershipTest extends TestCase
         $admin = require base_path('packages/Webkul/Admin/src/Config/acl.php');
         $registered = config('acl');
 
-        $this->assertCount(16, $package);
-        $this->assertCount(16, array_filter($registered, fn (array $entry): bool => str_starts_with($entry['key'], 'lost_found')));
+        $this->assertCount(24, $package);
+        $this->assertCount(24, array_filter($registered, fn (array $entry): bool => str_starts_with($entry['key'], 'lost_found')));
         $this->assertEmpty(array_filter($admin, fn (array $entry): bool => str_starts_with($entry['key'], 'lost_found')));
         foreach ([...$admin, ...$package] as $entry) {
             $this->assertSame(
@@ -37,17 +37,26 @@ class PackageOwnershipTest extends TestCase
         $this->assertNotNull($roleItems);
         $this->assertNotNull($roleItems->children->firstWhere('key', 'lost_found.items'));
         $this->assertNotNull($roleItems->children->firstWhere('key', 'lost_found.claims'));
+        $this->assertNotNull($roleItems->children->firstWhere('key', 'lost_found.responses'));
+        $this->assertNotNull($roleItems->children->firstWhere('key', 'lost_found.matches'));
         $this->assertSame('Lost & Found Management', trans('lost_found::app.acl.management', [], 'en'));
         $this->assertSame('lost_found.items.view', acl()->getRoles()['admin.lost_found.items.index']);
         $this->assertSame('lost_found.claims.view', acl()->getRoles()['admin.lost_found.claims.show']);
         $this->assertSame('lost_found.claims.approve', acl()->getRoles()['admin.lost_found.claims.revoke']);
+        $this->assertSame('lost_found.responses.verify', acl()->getRoles()['admin.lost_found.responses.verify']);
+        $this->assertSame('lost_found.matches.view', acl()->getRoles()['admin.lost_found.matches.index']);
+        $this->assertSame('lost_found.matches.generate', acl()->getRoles()['admin.lost_found.matches.generate_report']);
+        $this->assertSame('lost_found.matches.review', acl()->getRoles()['admin.lost_found.matches.review']);
 
         $localizedKeys = [
             'admin.claims.reviewed_success', 'admin.claims.approved_success',
             'admin.claims.rejected_success', 'admin.claims.revoked_success',
             'admin.items.created_success', 'admin.items.updated_success',
+            'admin.items.approved_success',
+            'admin.reports.approved_success', 'admin.reports.rejected_success',
             'admin.items.image_uploaded_success', 'admin.custody.received_success',
             'admin.custody.transferred_success', 'admin.custody.moved_success',
+            'admin.matches.generated_success', 'admin.matches.reviewed_success', 'admin.matches.verified_success',
             'student.claims.submitted_success', 'student.claims.evidence_added_success',
             'student.claims.image_added_success', 'student.claims.withdrawn_success',
             'student.reports.created_success', 'student.reports.updated_success',
@@ -97,9 +106,9 @@ class PackageOwnershipTest extends TestCase
         $employee = $routes->filter(fn ($route): bool => str_starts_with((string) $route->getName(), 'admin.lost_found.'));
         $student = $routes->filter(fn ($route): bool => str_starts_with((string) $route->getName(), 'student.lost_found.'));
 
-        $this->assertCount(19, $employee);
+        $this->assertCount(35, $employee);
         $this->assertCount(7, $student);
-        $this->assertCount(26, $employee->merge($student)->pluck('action.as')->unique());
+        $this->assertCount(42, $employee->merge($student)->pluck('action.as')->unique());
 
         foreach ($employee as $route) {
             $this->assertStringStartsWith(trim(config('app.admin_path'), '/').'/lost-found/', $route->uri());
@@ -117,13 +126,14 @@ class PackageOwnershipTest extends TestCase
     {
         $process = new Process(['php', 'artisan', 'route:list', '--json'], base_path(), [
             'APP_ADMIN_PATH' => 'backoffice',
+            'CACHE_STORE' => 'array',
         ]);
         $process->mustRun();
 
         $routes = collect(json_decode($process->getOutput(), true, flags: JSON_THROW_ON_ERROR));
         $employee = $routes->filter(fn (array $route): bool => str_starts_with($route['name'] ?? '', 'admin.lost_found.'));
 
-        $this->assertCount(19, $employee);
+        $this->assertCount(35, $employee);
         foreach ($employee as $route) {
             $this->assertStringStartsWith('backoffice/lost-found/', $route['uri']);
         }

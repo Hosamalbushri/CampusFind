@@ -3,6 +3,7 @@
 namespace CampusFind\Web\Web\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -34,7 +35,7 @@ class LoginController extends Controller
     /**
      * Handle login authentication attempt.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $this->handleLocale($request);
 
@@ -58,12 +59,28 @@ class LoginController extends Controller
                 'university_card_number' => $card,
                 'password'               => $password,
             ], $remember)) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => trans('campusfind_web_web::app.web.auth.login_failed'),
+                        'errors'  => [
+                            'university_card_number' => [trans('campusfind_web_web::app.web.auth.login_failed')],
+                        ],
+                    ], 422);
+                }
+
                 return back()
                     ->withInput($request->only('university_card_number'))
                     ->withErrors(['university_card_number' => trans('campusfind_web_web::app.web.auth.login_failed')]);
             }
 
             $request->session()->regenerate();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message'      => trans('campusfind_web_web::app.web.auth.welcome_back'),
+                    'redirect_url' => $this->determineRedirectUrl(),
+                ], 200);
+            }
 
             return redirect()->to($this->determineRedirectUrl())
                 ->with('success', trans('campusfind_web_web::app.web.auth.welcome_back'));
@@ -88,13 +105,38 @@ class LoginController extends Controller
                 Auth::guard($guard)->login($student, $remember);
                 $request->session()->regenerate();
 
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message'      => trans('campusfind_web_web::app.web.auth.welcome_back'),
+                        'redirect_url' => $this->determineRedirectUrl(),
+                    ], 200);
+                }
+
                 return redirect()->to($this->determineRedirectUrl())
                     ->with('success', trans('campusfind_web_web::app.web.auth.welcome_back'));
             } catch (UniversityApiException $e) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => $e->getMessage(),
+                        'errors'  => [
+                            'university_card_number' => [$e->getMessage()],
+                        ],
+                    ], 422);
+                }
+
                 return back()
                     ->withInput($request->only('university_card_number'))
                     ->withErrors(['university_card_number' => $e->getMessage()]);
             }
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => trans('campusfind_web_web::app.web.auth.login_failed'),
+                'errors'  => [
+                    'university_card_number' => [trans('campusfind_web_web::app.web.auth.login_failed')],
+                ],
+            ], 422);
         }
 
         return back()
@@ -105,7 +147,7 @@ class LoginController extends Controller
     /**
      * Log out of the session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): JsonResponse|RedirectResponse
     {
         $guard = config('campusfind_web_web.auth.guard', 'student');
 
@@ -113,6 +155,13 @@ class LoginController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message'      => trans('campusfind_web_web::app.web.auth.logout_success'),
+                'redirect_url' => route('campusfind_web.web.home'),
+            ], 200);
+        }
 
         return redirect()->route('campusfind_web.web.home')
             ->with('success', trans('campusfind_web_web::app.web.auth.logout_success'));

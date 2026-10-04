@@ -296,4 +296,42 @@ class EmployeeClaimReadTest extends TestCase
         $this->assertSame('&lt;script&gt;alert(3)&lt;/script&gt;', $record['claimant_name']);
         $this->assertStringNotContainsString('<script>', json_encode($record));
     }
+
+    public function test_authorized_employee_can_stream_evidence_file_and_unauthorized_is_rejected(): void
+    {
+        $actor = $this->employee(['lost_found.claims.view']);
+        $unauthorized = $this->employee(['lost_found.items.view']);
+        $item = $this->item($actor);
+        $claim = $this->claim($item);
+
+        \Illuminate\Support\Facades\Storage::fake('lost_found_private');
+        config()->set('lost_found.claim_evidence_images.disk', 'lost_found_private');
+        \Illuminate\Support\Facades\Storage::disk('lost_found_private')->put('lost-found/test-evidence.png', 'fake-image-bytes');
+
+        $evidence = $claim->evidence()->create([
+            'evidence_type' => EvidenceType::IMAGE_ATTACHMENT,
+            'file_path' => 'lost-found/test-evidence.png',
+            'storage_key_hash' => hash('sha256', 'lost-found/test-evidence.png'),
+            'original_name' => 'receipt.png',
+            'mime_type' => 'image/png',
+            'byte_size' => 16,
+            'submitted_at' => now(),
+        ]);
+
+        // Authorized employee can access file
+        $response = $this->actingAs($actor, 'user')
+            ->get(route('admin.lost_found.claims.evidence.file', [$claim->id, $evidence->id]));
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'image/png');
+
+        // Unauthorized employee is rejected
+        $this->actingAs($unauthorized, 'user')
+            ->get(route('admin.lost_found.claims.evidence.file', [$claim->id, $evidence->id]))
+            ->assertStatus(401);
+
+        // Non-existent evidence returns 404
+        $this->actingAs($actor, 'user')
+            ->get(route('admin.lost_found.claims.evidence.file', [$claim->id, 999999]))
+            ->assertNotFound();
+    }
 }

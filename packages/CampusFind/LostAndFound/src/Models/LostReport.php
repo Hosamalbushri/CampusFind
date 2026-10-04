@@ -63,10 +63,25 @@ class LostReport extends Model implements LostReportContract
         return $this->belongsTo(FoundItemProxy::modelClass(), 'resolved_found_item_id');
     }
 
+    public function potentialItemMatches()
+    {
+        return $this->hasMany(PotentialReportItemMatch::class, 'lost_report_id');
+    }
+
+    public function verifiedItemLink()
+    {
+        return $this->hasOne(VerifiedReportItemLink::class, 'lost_report_id');
+    }
+
     public function images()
     {
         return $this->hasMany(LostReportImage::class, 'lost_report_id')
             ->orderBy('sort_order', 'asc')
             ->orderBy('id', 'asc');
+    }
+
+    public function foundResponses()
+    {
+        return $this->hasMany(FoundReportResponse::class, 'lost_report_id');
     }
 }
