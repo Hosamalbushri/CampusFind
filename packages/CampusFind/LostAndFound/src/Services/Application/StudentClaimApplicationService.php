@@ -27,7 +27,7 @@ class StudentClaimApplicationService
 
     public function submitClaim(Student $actor, FoundItem $item, array $data = []): LostFoundClaim
     {
-        if (! in_array($item->status, [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
+        if (! in_array($item->status, [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
             throw new DomainException("Cannot submit a claim for an item in status [{$item->status->value}].");
         }
 

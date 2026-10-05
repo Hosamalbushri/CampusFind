@@ -47,6 +47,7 @@
                 as="div"
             >
                 <form
+                    novalidate
                     @submit="handleSubmit($event, login)"
                     ref="loginForm"
                     class="mt-8 space-y-5"
@@ -175,7 +176,9 @@
                                 }
 
                                 if (response.data.redirect_url) {
-                                    window.location.href = response.data.redirect_url;
+                                    setTimeout(() => {
+                                        window.location.href = response.data.redirect_url;
+                                    }, 700);
                                 }
                             })
                             .catch((error) => {

@@ -149,14 +149,14 @@ class FoundItemDataGrid extends DataGrid
             ]);
         }
 
-        if ($this->can($actor, 'lost_found.items.edit')) {
-            $this->addAction([
-                'icon' => 'icon-tick',
-                'title' => trans('lost_found::app.employee.items.approve'),
-                'method' => 'POST',
-                'url' => fn ($row) => route('admin.lost_found.items.approve', (int) $row->id),
-            ]);
-        }
+//        if ($this->can($actor, 'lost_found.items.edit')) {
+//            $this->addAction([
+//                'icon' => 'icon-tick',
+//                'title' => trans('lost_found::app.employee.items.approve'),
+//                'method' => 'POST',
+//                'url' => fn ($row) => route('admin.lost_found.items.approve', (int) $row->id),
+//            ]);
+//        }
     }
 
     protected function validatedRequest(): array

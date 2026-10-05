@@ -37,7 +37,7 @@ class LostFoundClaimRepository extends Repository
             $item = FoundItem::query()->lockForUpdate()->findOrFail($data['found_item_id'] ?? null);
 
             if ($item->approved_claim_id !== null
-                || ! in_array($item->status, [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
+                || ! in_array($item->status, [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
                 throw new InvalidArgumentException('This item cannot accept a new claim.');
             }
 

@@ -20,6 +20,7 @@ class StoreClaimRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::exists('lost_found_items', 'id')->whereIn('status', [
+                    ItemStatus::DRAFT->value,
                     ItemStatus::REPORTED->value,
                     ItemStatus::IN_CUSTODY->value,
                 ]),

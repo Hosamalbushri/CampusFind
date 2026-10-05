@@ -213,19 +213,27 @@
             {{ $attributes->only(['name', ':name', 'value', ':value', 'v-model', 'rules', ':rules', 'label', ':label']) }}
             name="{{ $name }}"
         >
-            <select
-                name="{{ $name }}"
-                id="{{ $controlId }}"
-                v-bind="field"
-                @if ($hasError)
-                    aria-invalid="true"
-                    aria-describedby="{{ $errorId }}"
-                @endif
-                :class="[errors.length ? 'border border-rose-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label', 'id'])->merge(['class' => 'custom-select w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3.5 py-2.5 text-sm font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 focus:border-[#185c54] focus:outline-none focus:ring-4 focus:ring-[#185c54]/15 cursor-pointer']) }}
-            >
-                {{ $slot }}
-            </select>
+            <div class="relative w-full">
+                <select
+                    name="{{ $name }}"
+                    id="{{ $controlId }}"
+                    v-bind="field"
+                    @if ($hasError)
+                        aria-invalid="true"
+                        aria-describedby="{{ $errorId }}"
+                    @endif
+                    :class="[errors.length ? 'border !border-rose-500 hover:border-rose-500 focus:border-rose-500 focus:ring-rose-500/15' : '']"
+                    {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label', 'id'])->merge(['class' => 'w-full appearance-none rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 px-3.5 py-2.5 ltr:pr-10 rtl:pl-10 text-sm font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 focus:border-[#185c54] focus:outline-none focus:ring-4 focus:ring-[#185c54]/15 cursor-pointer']) }}
+                >
+                    {{ $slot }}
+                </select>
+
+                <div class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3.5 rtl:pl-3.5 text-slate-400 dark:text-slate-500">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
         </v-field>
 
         @break

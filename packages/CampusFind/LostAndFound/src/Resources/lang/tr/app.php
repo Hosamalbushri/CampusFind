@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'Rapor Türü',
+    'types' => [
+        'found' => 'Bulunan Eşya',
+        'lost' => 'Kayıp Raporu',
+        'claim' => 'Talep',
+    ],
     'acl' => [
         'management' => 'Kayıp Eşya Yönetimi',
         'items' => 'Bulunan Eşya Yönetimi',
@@ -71,6 +77,7 @@ return [
         ],
         'claims' => [
             'title' => 'Talepler',
+            'reviewer' => 'İnceleyen',
             'view_claims' => 'Talepleri görüntüle',
             'view_detail' => 'Ayrıntıları görüntüle',
             'detail_title' => 'Talep #:id',

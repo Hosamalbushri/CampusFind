@@ -9,6 +9,20 @@ use Illuminate\Http\Request;
 class Locale
 {
     /**
+     * The application instance.
+     *
+     * @var Application
+     */
+    protected Application $app;
+
+    /**
+     * The request instance.
+     *
+     * @var Request
+     */
+    protected Request $request;
+
+    /**
      * The middleware instance.
      *
      * @return void

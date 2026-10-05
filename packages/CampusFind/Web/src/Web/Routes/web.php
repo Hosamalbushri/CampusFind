@@ -20,6 +20,7 @@ Route::name('campusfind_web.web.')->group(function () {
     // Reporting Routes
     Route::get('reports/lost', [ReportController::class, 'createLost'])->name('reports.lost');
     Route::post('reports/lost', [ReportController::class, 'storeLost'])->middleware('throttle:30,1')->name('reports.lost.store');
+    Route::get('reports/lost/{reference}/image', [ReportController::class, 'showLostImage'])->name('reports.lost.image');
     Route::get('reports/lost/{reference}', [LostReportResponseController::class, 'show'])->name('lost-reports.show');
     Route::post('reports/lost/{reference}/found-response', [LostReportResponseController::class, 'store'])->middleware('throttle:10,1')->name('lost-reports.responses.store');
     Route::post('reports/lost/{reference}/found-response/cancel', [LostReportResponseController::class, 'cancel'])->middleware('throttle:10,1')->name('lost-reports.responses.cancel');

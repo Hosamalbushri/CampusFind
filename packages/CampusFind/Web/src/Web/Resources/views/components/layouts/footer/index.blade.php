@@ -6,19 +6,23 @@
             <!-- Left Column: Brand Identity & Newsletter -->
             <div class="lg:col-span-6 xl:col-span-5 space-y-6">
                 <!-- Brand Logo & Name -->
-                <a href="{{ route('campusfind_web.web.home') }}" class="inline-flex items-center gap-3 text-decoration-none group">
+                <a href="{{ route('campusfind_web.web.home') }}" class="inline-flex items-center gap-2.5 text-decoration-none group select-none">
                     @if (config('campusfind_web_web.branding.logo'))
                         <img src="{{ config('campusfind_web_web.branding.logo') }}" alt="{{ config('campusfind_web_web.branding.name', 'CampusFind') }}" class="h-9 w-auto">
                     @else
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#185c54] text-white shadow-xs group-hover:bg-[#134942] transition-colors">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#185c54] text-white shadow-xs group-hover:bg-[#134942] transition-colors">
+                            <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </div>
                     @endif
-                    <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-[#185c54] dark:group-hover:text-emerald-400 transition-colors">
-                        {{ config('campusfind_web_web.branding.name') ? trans(config('campusfind_web_web.branding.name')) : trans('campusfind_web_web::app.web.title') }}
-                    </span>
+
+                    <div class="flex flex-col">
+                        <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                            Campus<span class="text-[#185c54] dark:text-emerald-400">Find</span>
+                        </span>
+                    </div>
                 </a>
 
                 <!-- Headline & Subtitle -->

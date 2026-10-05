@@ -13,6 +13,7 @@ use CampusFind\LostAndFound\DataTransferObjects\PublicUnifiedSearchCriteria;
 use CampusFind\LostAndFound\DataTransferObjects\PublicUnifiedSearchResult;
 use CampusFind\LostAndFound\Enums\FoundItemImageVisibility;
 use CampusFind\LostAndFound\Enums\ItemStatus;
+use CampusFind\LostAndFound\Enums\ReportStatus;
 use CampusFind\LostAndFound\Models\FoundItem;
 use CampusFind\LostAndFound\Models\LostFoundCategory;
 use Carbon\CarbonImmutable;
@@ -45,7 +46,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 'found_at',
                 'status',
             ])
-            ->whereIn('status', [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY])
+            ->whereIn('status', [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY])
             ->with([
                 'category:id,code,is_active',
                 'coverImage',
@@ -74,7 +75,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 'found_at',
                 'status',
             ])
-            ->whereIn('status', [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY]);
+            ->whereIn('status', [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY]);
 
         // Filter by category if specified
         if ($criteria->category !== null) {
@@ -156,9 +157,9 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
 
         $queries = [];
         $includeFound = $criteria->type !== 'lost'
-            && ($criteria->status === null || in_array($criteria->status, ['reported', 'in_custody'], true));
+            && ($criteria->status === null || in_array($criteria->status, ['draft', 'reported', 'in_custody'], true));
         $includeLost = $criteria->type !== 'found'
-            && ($criteria->status === null || $criteria->status === 'active');
+            && ($criteria->status === null || in_array($criteria->status, ['draft', 'active'], true));
 
         if ($includeFound) {
             $queries[] = $this->publicFoundRecordsQuery($criteria, $categoryId);
@@ -188,12 +189,28 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
             ->offset(($currentPage - 1) * $criteria->perPage)
             ->limit($criteria->perPage)
             ->get();
-        $publicImages = $this->loadPublicFoundCoverImages($rows);
+        $foundImages = $this->loadPublicFoundCoverImages($rows);
+        $lostImages = $this->loadPublicReportCoverImages($rows);
 
-        $items = $rows->map(function (object $row) use ($publicImages): PublicUnifiedRecordData {
-            $storageKey = $row->record_type === 'found'
-                ? $publicImages->get((int) $row->internal_id)
-                : null;
+        $items = $rows->map(function (object $row) use ($foundImages, $lostImages): PublicUnifiedRecordData {
+            $storageKey = match ($row->record_type) {
+                'found' => $foundImages->get((int) $row->internal_id),
+                'lost'  => $lostImages->get((int) $row->internal_id),
+                default => null,
+            };
+
+            $imageUrl = null;
+            if ($storageKey !== null) {
+                if ($row->record_type === 'found') {
+                    $imageUrl = Storage::disk('public')->url($storageKey);
+                } else {
+                    if (\Illuminate\Support\Facades\Route::has('campusfind_web.web.reports.lost.image')) {
+                        $imageUrl = route('campusfind_web.web.reports.lost.image', ['reference' => $row->public_reference]);
+                    } else {
+                        $imageUrl = Storage::disk('public')->url($storageKey);
+                    }
+                }
+            }
 
             return new PublicUnifiedRecordData(
                 publicId: $row->record_type.':'.$row->public_reference,
@@ -208,7 +225,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 location: $row->public_location,
                 occurredAt: $row->occurred_at !== null ? CarbonImmutable::parse($row->occurred_at) : null,
                 description: $row->public_description,
-                imageUrl: $storageKey !== null ? Storage::disk('public')->url($storageKey) : null,
+                imageUrl: $imageUrl,
                 hasImage: $storageKey !== null,
             );
         })->values()->all();
@@ -245,7 +262,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 'status',
             ])
             ->where('public_reference_key', $normalizedKey)
-            ->whereIn('status', [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY])
+            ->whereIn('status', [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY])
             ->with([
                 'category:id,code,is_active',
                 'coverImage',
@@ -279,8 +296,9 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                     ->where('category.is_active', true);
             })
             ->where('report.public_reference_key', $normalizedKey)
-            ->where('report.status', 'active')
+            ->whereIn('report.status', ['active', 'draft'])
             ->first([
+                'report.id',
                 'report.public_reference',
                 'report.title',
                 'report.public_description',
@@ -293,6 +311,21 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
             return null;
         }
 
+        $imageKey = DB::table('lost_found_report_images')
+            ->where('lost_report_id', $report->id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->value('storage_key');
+
+        $imageUrl = null;
+        if ($imageKey !== null) {
+            if (\Illuminate\Support\Facades\Route::has('campusfind_web.web.reports.lost.image')) {
+                $imageUrl = route('campusfind_web.web.reports.lost.image', ['reference' => $report->public_reference]);
+            } else {
+                $imageUrl = Storage::disk('public')->url($imageKey);
+            }
+        }
+
         return new PublicLostReportData(
             reference: $report->public_reference,
             title: $report->title,
@@ -300,6 +333,8 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
             lostLocation: $report->lost_location,
             lostAt: $report->lost_at !== null ? CarbonImmutable::parse($report->lost_at) : null,
             description: $report->public_description,
+            imageUrl: $imageUrl,
+            hasImage: $imageKey !== null,
         );
     }
 
@@ -382,7 +417,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 $join->on('category.id', '=', 'source.category_id')
                     ->where('category.is_active', true);
             })
-            ->whereIn('source.status', [ItemStatus::REPORTED->value, ItemStatus::IN_CUSTODY->value])
+            ->whereIn('source.status', [ItemStatus::DRAFT->value, ItemStatus::REPORTED->value, ItemStatus::IN_CUSTODY->value])
             ->select([
                 DB::raw("'found' as record_type"),
                 'source.id as internal_id',
@@ -419,7 +454,7 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
                 $join->on('category.id', '=', 'source.category_id')
                     ->where('category.is_active', true);
             })
-            ->where('source.status', 'active')
+            ->whereIn('source.status', [ReportStatus::ACTIVE->value, ReportStatus::DRAFT->value])
             ->select([
                 DB::raw("'lost' as record_type"),
                 'source.id as internal_id',
@@ -512,6 +547,29 @@ class PublicLostAndFoundService implements PublicLostAndFoundReadContract
             ->get(['found_item_id', 'storage_key'])
             ->unique('found_item_id')
             ->pluck('storage_key', 'found_item_id');
+    }
+
+    /** @param Collection<int, object> $rows */
+    private function loadPublicReportCoverImages(Collection $rows): Collection
+    {
+        $lostReportIds = $rows
+            ->where('record_type', 'lost')
+            ->pluck('internal_id')
+            ->map(static fn ($id): int => (int) $id)
+            ->values();
+
+        if ($lostReportIds->isEmpty()) {
+            return collect();
+        }
+
+        return DB::table('lost_found_report_images')
+            ->whereIn('lost_report_id', $lostReportIds)
+            ->orderBy('lost_report_id')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['lost_report_id', 'storage_key'])
+            ->unique('lost_report_id')
+            ->pluck('storage_key', 'lost_report_id');
     }
 
     private function emptyUnifiedResult(PublicUnifiedSearchCriteria $criteria): PublicUnifiedSearchResult

@@ -74,6 +74,7 @@ class LoginController extends Controller
             }
 
             $request->session()->regenerate();
+            $request->session()->flash('success', trans('campusfind_web_web::app.web.auth.welcome_back'));
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -104,6 +105,7 @@ class LoginController extends Controller
 
                 Auth::guard($guard)->login($student, $remember);
                 $request->session()->regenerate();
+                $request->session()->flash('success', trans('campusfind_web_web::app.web.auth.welcome_back'));
 
                 if ($request->expectsJson()) {
                     return response()->json([

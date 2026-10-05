@@ -105,6 +105,7 @@
                 as="div"
             >
                 <form
+                    novalidate
                     @submit="handleSubmit($event, store)"
                     ref="foundReportForm"
                     class="space-y-6"

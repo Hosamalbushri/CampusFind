@@ -10,7 +10,7 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center font-bold text-decoration-none transition-all duration-200 focus:outline-none focus:ring-4 cursor-pointer select-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none relative';
+    $baseClasses = 'inline-flex items-center justify-center font-bold text-decoration-none transition-all duration-200 focus:outline-none focus:ring-4 cursor-pointer select-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none relative whitespace-nowrap';
 
     $sizeClasses = match ($size) {
         'xs'    => 'px-3 py-1.5 text-xs gap-1.5 rounded-lg',

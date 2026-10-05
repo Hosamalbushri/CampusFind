@@ -206,6 +206,67 @@ class ReportController extends Controller
         return [];
     }
 
+    /**
+     * Serve a public-safe cover image for a lost report.
+     */
+    public function showLostImage(string $reference): \Illuminate\Http\Response
+    {
+        try {
+            $normalizedKey = \CampusFind\LostAndFound\Services\PublicReference::normalize($reference);
+        } catch (\Throwable) {
+            abort(404);
+        }
+
+        $dbReport = \Illuminate\Support\Facades\DB::table('lost_found_reports')
+            ->where('public_reference_key', $normalizedKey)
+            ->whereIn('status', ['active', 'draft'])
+            ->first(['id']);
+
+        if (! $dbReport) {
+            abort(404);
+        }
+
+        $imageRecord = \Illuminate\Support\Facades\DB::table('lost_found_report_images')
+            ->where('lost_report_id', $dbReport->id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->first(['storage_key', 'mime_type']);
+
+        if (! $imageRecord || empty($imageRecord->storage_key)) {
+            abort(404);
+        }
+
+        $diskNames = array_unique([
+            (string) config('lost_found.claim_evidence_images.disk', 'lost_found_private'),
+            'lost_found_private',
+            'public',
+        ]);
+
+        $content = null;
+        $mime = $imageRecord->mime_type ?? 'image/jpeg';
+
+        foreach ($diskNames as $dName) {
+            try {
+                $disk = \Illuminate\Support\Facades\Storage::disk($dName);
+                if ($disk->exists($imageRecord->storage_key)) {
+                    $content = $disk->get($imageRecord->storage_key);
+                    break;
+                }
+            } catch (\Throwable) {
+                // Try next disk fallback
+            }
+        }
+
+        if ($content === null) {
+            abort(404);
+        }
+
+        return response($content, 200, [
+            'Content-Type'  => $mime,
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
     private function handleLocale(Request $request): void
     {
         $availableLocales = ['ar', 'en', 'es', 'fa', 'pt_BR', 'tr', 'vi'];

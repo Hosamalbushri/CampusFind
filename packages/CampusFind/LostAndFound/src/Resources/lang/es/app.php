@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'Tipo de informe',
+    'types' => [
+        'found' => 'Objeto encontrado',
+        'lost' => 'Informe de pérdida',
+        'claim' => 'Reclamación',
+    ],
     'acl' => [
         'management' => 'Gestión de objetos perdidos',
         'items' => 'Gestión de objetos encontrados',
@@ -71,6 +77,7 @@ return [
         ],
         'claims' => [
             'title' => 'Reclamaciones',
+            'reviewer' => 'Revisor',
             'view_claims' => 'Ver reclamaciones',
             'view_detail' => 'Ver detalle',
             'detail_title' => 'Reclamación #:id',

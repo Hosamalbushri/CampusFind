@@ -167,7 +167,7 @@ class LostReportResponseController extends Controller
     {
         return LostReport::query()
             ->where('public_reference_key', PublicReference::normalize($reference))
-            ->where('status', ReportStatus::ACTIVE)
+            ->whereIn('status', [ReportStatus::ACTIVE, ReportStatus::DRAFT])
             ->firstOrFail();
     }
 

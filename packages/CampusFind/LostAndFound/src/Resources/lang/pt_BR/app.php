@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'Tipo de Relatório',
+    'types' => [
+        'found' => 'Item Encontrado',
+        'lost' => 'Relatório de Perda',
+        'claim' => 'Reivindicação',
+    ],
     'acl' => [
         'management' => 'Gestão de achados e perdidos',
         'items' => 'Gestão de itens encontrados',
@@ -71,6 +77,7 @@ return [
         ],
         'claims' => [
             'title' => 'Reivindicações',
+            'reviewer' => 'Revisor',
             'view_claims' => 'Ver reivindicações',
             'view_detail' => 'Ver detalhes',
             'detail_title' => 'Reivindicação #:id',

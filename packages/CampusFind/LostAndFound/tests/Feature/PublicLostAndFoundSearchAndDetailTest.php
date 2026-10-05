@@ -121,9 +121,10 @@ class PublicLostAndFoundSearchAndDetailTest extends TestCase
         $this->assertContains($reported->public_reference, $references);
         $this->assertContains($inCustody->public_reference, $references);
 
-        // Search for secret items should yield zero results
+        // Draft items are public-readable
         $draftResult = $reader->searchPublicFoundItems(new PublicFoundItemSearchCriteria(query: 'Draft'));
-        $this->assertEmpty($draftResult->items);
+        $this->assertCount(1, $draftResult->items);
+        $this->assertSame($draft->public_reference, $draftResult->items[0]->reference);
 
         $returnedResult = $reader->searchPublicFoundItems(new PublicFoundItemSearchCriteria(query: 'Returned'));
         $this->assertEmpty($returnedResult->items);
@@ -342,8 +343,8 @@ class PublicLostAndFoundSearchAndDetailTest extends TestCase
         // Non-existent reference returns null
         $this->assertNull($reader->findPublicFoundItemByReference('LF-NONEXISTENT'));
 
-        // Non-public items return null (identical to non-existent)
-        $this->assertNull($reader->findPublicFoundItemByReference($draft->public_reference));
+        // Draft items return valid data, while returned and disposed return null
+        $this->assertNotNull($reader->findPublicFoundItemByReference($draft->public_reference));
         $this->assertNull($reader->findPublicFoundItemByReference($returned->public_reference));
         $this->assertNull($reader->findPublicFoundItemByReference($disposed->public_reference));
     }

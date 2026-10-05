@@ -50,9 +50,9 @@ class FoundResponsePageTest extends TestCase
 
     public function test_inactive_reports_are_not_reachable_by_direct_url(): void
     {
-        $draft = $this->report(ReportStatus::DRAFT);
+        $cancelled = $this->report(ReportStatus::CANCELLED);
 
-        $this->get(route('campusfind_web.web.lost-reports.show', $draft->public_reference))->assertNotFound();
+        $this->get(route('campusfind_web.web.lost-reports.show', $cancelled->public_reference))->assertNotFound();
         $this->get(route('campusfind_web.web.lost-reports.show', 'LOST-DOES-NOT-EXIST'))->assertNotFound();
         $this->actingAs($this->finder, 'student')->post(
             route('campusfind_web.web.lost-reports.responses.store', 'LOST-DOES-NOT-EXIST'),

@@ -236,7 +236,7 @@ class ClaimResolutionService
             throw new DomainException('This item already has an approved claim.');
         }
 
-        if (! in_array($item->status, [ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
+        if (! in_array($item->status, [ItemStatus::DRAFT, ItemStatus::REPORTED, ItemStatus::IN_CUSTODY], true)) {
             throw new DomainException('This item cannot accept an ownership approval in its current state.');
         }
     }

@@ -203,18 +203,20 @@ class PublicUnifiedBrowsingTest extends TestCase
             'byte_size' => 1024,
             'sort_order' => 0,
         ]);
-        $this->createFound(['status' => ItemStatus::DRAFT, 'title' => 'Hidden Found Draft']);
+        $draftFound = $this->createFound(['status' => ItemStatus::DRAFT, 'title' => 'Public Found Draft']);
         $this->createFound(['status' => ItemStatus::RETURNED, 'title' => 'Hidden Returned Item']);
-        $this->createLost(['status' => ReportStatus::DRAFT, 'title' => 'Hidden Lost Draft']);
+        $draftLost = $this->createLost(['status' => ReportStatus::DRAFT, 'title' => 'Public Lost Draft']);
         $this->createLost(['status' => ReportStatus::CANCELLED, 'title' => 'Hidden Cancelled Report']);
 
         $reader = $this->reader();
         $result = $reader->searchPublicRecords(new PublicUnifiedSearchCriteria);
         $serialized = json_encode($result, JSON_THROW_ON_ERROR);
 
-        $this->assertSame(2, $result->total);
+        $this->assertSame(4, $result->total);
         $this->assertStringContainsString($publicFound->public_reference, $serialized);
         $this->assertStringContainsString($publicLost->public_reference, $serialized);
+        $this->assertStringContainsString($draftFound->public_reference, $serialized);
+        $this->assertStringContainsString($draftLost->public_reference, $serialized);
         $this->assertStringNotContainsString('PRIVATE_LOST_SERIAL_7788', $serialized);
         $this->assertStringNotContainsString('PRIVATE_FOUND_MARK_9911', $serialized);
         $this->assertStringNotContainsString('SECRET-SERIAL', $serialized);
@@ -231,12 +233,19 @@ class PublicUnifiedBrowsingTest extends TestCase
     public function test_public_safe_cover_images_are_loaded_without_n_plus_one_queries(): void
     {
         $item = $this->createFound();
-        $this->createLost();
+        $report = $this->createLost();
         FoundItemImage::create([
             'found_item_id' => $item->id,
             'created_by_user_id' => $this->staff->id,
             'visibility' => FoundItemImageVisibility::PUBLIC_SAFE,
             'storage_key' => 'lost-found/items/public/unified-cover.jpg',
+            'mime_type' => 'image/jpeg',
+            'byte_size' => 2048,
+            'sort_order' => 0,
+        ]);
+        \CampusFind\LostAndFound\Models\LostReportImage::create([
+            'lost_report_id' => $report->id,
+            'storage_key' => 'lost-found/reports/public/report-cover.jpg',
             'mime_type' => 'image/jpeg',
             'byte_size' => 2048,
             'sort_order' => 0,
@@ -252,9 +261,14 @@ class PublicUnifiedBrowsingTest extends TestCase
         $lost = collect($result->items)->firstWhere('type', 'lost');
         $this->assertTrue($found->hasImage);
         $this->assertStringContainsString('unified-cover.jpg', $found->imageUrl);
-        $this->assertFalse($lost->hasImage);
-        $this->assertNull($lost->imageUrl);
-        $this->assertLessThanOrEqual(3, count($queries));
+        $this->assertTrue($lost->hasImage);
+        $this->assertNotNull($lost->imageUrl);
+        $this->assertLessThanOrEqual(4, count($queries));
+
+        $singleReport = $this->reader()->findPublicLostReportByReference($report->public_reference);
+        $this->assertNotNull($singleReport);
+        $this->assertTrue($singleReport->hasImage);
+        $this->assertNotNull($singleReport->imageUrl);
     }
 
     public function test_invalid_criteria_and_sql_fragments_are_normalized_safely(): void

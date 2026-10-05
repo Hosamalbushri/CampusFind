@@ -81,6 +81,7 @@
                 as="div"
             >
                 <form
+                    novalidate
                     @submit="handleSubmit($event, store)"
                     ref="lostReportForm"
                     class="space-y-6"

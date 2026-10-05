@@ -4,13 +4,13 @@ return [
     /**
      * Dashboard.
      */
-    [
-        'key' => 'dashboard',
-        'name' => 'admin::app.layouts.dashboard',
-        'route' => 'admin.dashboard.index',
-        'sort' => 1,
-        'icon-class' => 'icon-dashboard',
-    ],
+//    [
+//        'key' => 'dashboard',
+//        'name' => 'admin::app.layouts.dashboard',
+//        'route' => 'admin.dashboard.index',
+//        'sort' => 1,
+//        'icon-class' => 'icon-dashboard',
+//    ],
 
     /**
      * Settings.
@@ -42,30 +42,31 @@ return [
         'route' => 'admin.settings.users.index',
         'sort' => 3,
         'icon-class' => 'icon-user',
-    ], [
-        'key' => 'settings.website_languages',
-        'name' => 'admin::website-languages.title',
-        'route' => 'admin.settings.website-languages.index',
-        'info' => 'admin::website-languages.info',
-        'sort' => 5,
-        'icon-class' => 'icon-settings',
-    ], [
-        'key' => 'settings.website_languages.overview',
-        'name' => 'admin::website-languages.title',
-        'route' => 'admin.settings.website-languages.index',
-        'info' => 'admin::website-languages.info',
-        'sort' => 1,
-        'icon-class' => 'icon-setting',
     ],
+//    [
+//        'key' => 'settings.website_languages',
+//        'name' => 'admin::website-languages.title',
+//        'route' => 'admin.settings.website-languages.index',
+//        'info' => 'admin::website-languages.info',
+//        'sort' => 5,
+//        'icon-class' => 'icon-settings',
+//    ], [
+//        'key' => 'settings.website_languages.overview',
+//        'name' => 'admin::website-languages.title',
+//        'route' => 'admin.settings.website-languages.index',
+//        'info' => 'admin::website-languages.info',
+//        'sort' => 1,
+//        'icon-class' => 'icon-setting',
+//    ],
 
     /**
      * Configuration.
      */
-    [
-        'key' => 'configuration',
-        'name' => 'admin::app.layouts.configuration',
-        'route' => 'admin.configuration.index',
-        'sort' => 9,
-        'icon-class' => 'icon-configuration',
-    ],
+//    [
+//        'key' => 'configuration',
+//        'name' => 'admin::app.layouts.configuration',
+//        'route' => 'admin.configuration.index',
+//        'sort' => 9,
+//        'icon-class' => 'icon-configuration',
+//    ],
 ];

@@ -130,6 +130,36 @@ class FormAjaxArchitectureTest extends TestCase
         ]);
     }
 
+    public function test_ajax_lost_report_creation_with_image_stores_image_file_and_database_record(): void
+    {
+        $file = \Illuminate\Http\UploadedFile::fake()->image('lost-item.jpg', 600, 600);
+
+        $response = $this->actingAs($this->student, 'student')
+            ->postJson(route('campusfind_web.web.reports.lost.store'), [
+                'category_id'         => $this->category->id,
+                'title'               => 'حقيبة ظهر زرقاء',
+                'lost_location'       => 'المكتبة المركزية',
+                'lost_at'             => '2026-10-04 12:00:00',
+                'public_description'  => 'حقيبة تحتوي على كتب دراسية',
+                'private_description' => 'علامة مميزة على السحاب',
+                'image'               => $file,
+            ]);
+
+        $response->assertStatus(201);
+
+        $reportId = $response->json('data.id');
+        $reference = $response->json('data.reference');
+        $this->assertNotNull($reportId);
+        $this->assertNotNull($reference);
+
+        $this->assertDatabaseHas('lost_found_report_images', [
+            'lost_report_id' => $reportId,
+        ]);
+
+        $imageResponse = $this->get(route('campusfind_web.web.reports.lost.image', ['reference' => $reference]));
+        $imageResponse->assertStatus(200);
+    }
+
     public function test_ajax_found_report_creation_returns_201_on_success(): void
     {
         $response = $this->actingAs($this->student, 'student')

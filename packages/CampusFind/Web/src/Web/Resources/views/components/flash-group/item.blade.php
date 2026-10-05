@@ -12,7 +12,7 @@
         id="v-flash-item-template"
     >
         <div
-            class="pointer-events-auto flex w-full max-w-sm items-start justify-between gap-3 rounded-2xl border p-4 shadow-xl transition-all font-cairo bg-white dark:bg-slate-900"
+            class="pointer-events-auto flex w-full max-w-full sm:max-w-md items-start justify-between gap-3.5 rounded-2xl border p-4 shadow-xl backdrop-blur-md transition-all font-cairo bg-white/95 dark:bg-slate-900/95"
             :class="variantClasses[flash.type] || variantClasses.info"
             @mouseenter="pauseTimer"
             @mouseleave="resumeTimer"
@@ -20,29 +20,29 @@
         >
             <!-- SVG Icon -->
             <div
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-2xs"
                 :class="iconBgClasses[flash.type] || iconBgClasses.info"
             >
                 <svg v-if="flash.type === 'success'" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <svg v-else-if="flash.type === 'error' || flash.type === 'danger'" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <svg v-else-if="flash.type === 'warning'" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
 
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-slate-900 dark:text-white">
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-sm font-extrabold text-slate-900 dark:text-white">
                     @{{ typeHeadings[flash.type] || typeHeadings.info }}
                 </p>
 
-                <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed break-words">
+                <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 leading-relaxed break-words">
                     @{{ flash.message }}
                 </p>
             </div>
@@ -94,19 +94,19 @@
             data() {
                 return {
                     variantClasses: {
-                        success: 'border-emerald-200/80 dark:border-emerald-900/50',
-                        error: 'border-rose-200/80 dark:border-rose-900/50',
-                        danger: 'border-rose-200/80 dark:border-rose-900/50',
-                        warning: 'border-amber-200/80 dark:border-amber-900/50',
-                        info: 'border-sky-200/80 dark:border-sky-900/50',
+                        success: 'border-emerald-300/80 dark:border-emerald-700/60 shadow-emerald-500/10',
+                        error: 'border-rose-300/80 dark:border-rose-700/60 shadow-rose-500/10',
+                        danger: 'border-rose-300/80 dark:border-rose-700/60 shadow-rose-500/10',
+                        warning: 'border-amber-300/80 dark:border-amber-700/60 shadow-amber-500/10',
+                        info: 'border-sky-300/80 dark:border-sky-700/60 shadow-sky-500/10',
                     },
 
                     iconBgClasses: {
-                        success: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400',
-                        error: 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400',
-                        danger: 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400',
-                        warning: 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400',
-                        info: 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400',
+                        success: 'bg-emerald-100/80 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300',
+                        error: 'bg-rose-100/80 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300',
+                        danger: 'bg-rose-100/80 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300',
+                        warning: 'bg-amber-100/80 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300',
+                        info: 'bg-sky-100/80 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300',
                     },
 
                     typeHeadings: {

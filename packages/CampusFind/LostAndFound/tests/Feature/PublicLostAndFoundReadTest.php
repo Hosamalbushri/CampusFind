@@ -124,7 +124,7 @@ class PublicLostAndFoundReadTest extends TestCase
 
         $this->assertContains($reportedItem->public_reference, $references);
         $this->assertContains($inCustodyItem->public_reference, $references);
-        $this->assertNotContains($draftItem->public_reference, $references);
+        $this->assertContains($draftItem->public_reference, $references);
         $this->assertNotContains($returnedItem->public_reference, $references);
         $this->assertNotContains($disposedItem->public_reference, $references);
     }

@@ -31,7 +31,7 @@ class ItemController extends Controller
             'location' => ['nullable', 'string', 'max:100'],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
-            'status' => ['nullable', 'string', 'in:active,reported,in_custody'],
+            'status' => ['nullable', 'string', 'in:draft,active,reported,in_custody'],
             'sort' => ['nullable', 'string', 'in:newest,oldest,title_asc,title_desc'],
             'page' => ['nullable', 'integer', 'min:1'],
         ]);

@@ -175,6 +175,7 @@
                     as="div"
                 >
                     <form
+                        novalidate
                         @submit="handleSubmit($event, storeClaim)"
                         ref="claimForm"
                         class="mt-5 space-y-4"

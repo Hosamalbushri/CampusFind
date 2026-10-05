@@ -9,6 +9,11 @@
                     <x-web::badge variant="mint">@lang('campusfind_web_web::app.web.browse.record_lost')</x-web::badge>
                     <span class="text-sm font-bold text-slate-500 dark:text-slate-400">{{ $report->reference }}</span>
                 </div>
+                @if ($report->hasImage && $report->imageUrl)
+                    <div class="mt-5 relative h-72 w-full rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center">
+                        <img src="{{ $report->imageUrl }}" alt="{{ $report->title }}" class="h-full w-full object-contain p-2">
+                    </div>
+                @endif
                 <h1 class="mt-5 text-3xl font-black text-slate-900 dark:text-white">{{ $report->title }}</h1>
                 @if ($report->description)
                     <p class="mt-4 whitespace-pre-line text-slate-600 dark:text-slate-300">{{ $report->description }}</p>
@@ -79,6 +84,7 @@
                     as="div"
                 >
                     <form
+                        novalidate
                         @submit="handleSubmit($event, submitResponse)"
                         ref="responseForm"
                         data-found-response-form
@@ -251,7 +257,7 @@
                 type="text/x-template"
                 id="v-cancel-response-form-template"
             >
-                <form @submit.prevent="cancelResponse">
+                <form novalidate @submit.prevent="cancelResponse">
                     <x-web::button
                         type="submit"
                         variant="outline"

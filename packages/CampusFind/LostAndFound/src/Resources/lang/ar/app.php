@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'نوع البلاغ',
+    'types' => [
+        'found' => 'معثور عليه',
+        'lost' => 'مفقود',
+        'claim' => 'طلب استرداد',
+    ],
     'acl' => [
         'management' => 'المفقودات والمعثورات',
         'items' => 'إدارة المعثورات',
@@ -105,6 +111,7 @@ return [
         ],
         'claims' => [
             'title' => 'المطالبات',
+            'reviewer' => 'المراجع',
             'view_claims' => 'عرض المطالبات',
             'view_detail' => 'عرض التفاصيل',
             'detail_title' => 'المطالبة #:id',

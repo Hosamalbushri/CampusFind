@@ -3,7 +3,7 @@
     the ajaxified form or some customized slot form.
 -->
 @if ($attributes->has('as'))
-    <v-form {{ $attributes }}>
+    <v-form novalidate {{ $attributes }}>
         {{ $slot }}
     </v-form>
 
@@ -22,6 +22,7 @@
     @endphp
 
     <v-form
+        novalidate
         method="{{ $method === 'GET' ? 'GET' : 'POST' }}"
         :initial-errors="{{ json_encode((object) $initialErrors) }}"
         v-slot="{ meta, errors, setValues }"

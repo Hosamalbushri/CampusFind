@@ -88,10 +88,20 @@ class FoundResponseWorkflowTest extends TestCase
             $this->assertSame(1, FoundReportResponse::query()->count());
         }
 
-        $draft = $this->report(ReportStatus::DRAFT);
+        $cancelled = $this->report(ReportStatus::CANCELLED);
         $otherFinder = $this->student('OTHER');
         $this->expectException(DomainException::class);
-        $this->submit($otherFinder, $draft);
+        $this->submit($otherFinder, $cancelled);
+    }
+
+    public function test_draft_reports_can_receive_found_responses(): void
+    {
+        $draft = $this->report(ReportStatus::DRAFT);
+        $finder = $this->student('FINDER');
+        $response = $this->submit($finder, $draft);
+
+        $this->assertNotNull($response);
+        $this->assertSame($draft->id, $response->lost_report_id);
     }
 
     public function test_multiple_students_can_submit_independent_responses_to_one_report(): void

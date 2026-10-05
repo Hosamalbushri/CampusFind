@@ -12,6 +12,7 @@ class ClaimStateMachineTest extends TestCase
     public function test_valid_claim_state_transitions(): void
     {
         $this->assertTrue(ClaimStateService::canTransition(ClaimStatus::SUBMITTED, ClaimStatus::UNDER_REVIEW));
+        $this->assertTrue(ClaimStateService::canTransition(ClaimStatus::SUBMITTED, ClaimStatus::APPROVED));
         $this->assertTrue(ClaimStateService::canTransition(ClaimStatus::UNDER_REVIEW, ClaimStatus::APPROVED));
     }
 

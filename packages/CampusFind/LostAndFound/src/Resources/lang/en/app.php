@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'Report Type',
+    'types' => [
+        'found' => 'Found Item',
+        'lost' => 'Lost Report',
+        'claim' => 'Claim Request',
+    ],
     'acl' => [
         'management' => 'Lost & Found Management',
         'items' => 'Found Items Management',
@@ -105,6 +111,7 @@ return [
         ],
         'claims' => [
             'title' => 'Claims',
+            'reviewer' => 'Reviewer',
             'view_claims' => 'View claims',
             'view_detail' => 'View detail',
             'detail_title' => 'Claim #:id',

@@ -4,8 +4,69 @@
         <x-web::container>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
                 
-                <!-- Visual Graphic Column (Left in visual / order-2 lg:order-1) -->
-                <div class="order-2 lg:order-1 lg:col-span-6 flex justify-center">
+                <!-- Text Content Column (Right in RTL / order-2 lg:order-1) -->
+                <div class="order-2 lg:order-1 lg:col-span-6 flex flex-col items-start text-start">
+                    
+                    <!-- Top Badge -->
+                    <x-web::badge variant="mint" size="lg" class="mb-6 ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10">
+                        @lang('campusfind_web_web::app.web.hero.tag')
+                    </x-web::badge>
+
+                    <!-- Main Headline -->
+                    <h1 class="text-4xl sm:text-5xl lg:text-[3.6rem] xl:text-[4rem] font-black tracking-tight text-slate-900 dark:text-white leading-[1.14] sm:leading-[1.12]">
+                        <span>@lang('campusfind_web_web::app.web.hero.headline_main')</span>
+                        <br>
+                        <span class="inline-block mt-1 text-[#185c54] dark:text-[#a3e4c8]">@lang('campusfind_web_web::app.web.hero.headline_sub')</span>
+                    </h1>
+
+                    <!-- Subheadline / Description -->
+                    <p class="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-xl">
+                        @lang('campusfind_web_web::app.web.hero.subheadline')
+                    </p>
+
+                    <!-- Action Buttons using Button Component -->
+                    <div class="mt-8 sm:mt-10 flex flex-wrap items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
+                        <x-web::button
+                            href="{{ route('campusfind_web.web.reports.lost') }}"
+                            variant="primary"
+                            size="xl"
+                            class="w-full sm:w-auto"
+                        >
+                            @lang('campusfind_web_web::app.web.hero.primary_action')
+                        </x-web::button>
+
+                        <x-web::button
+                            href="{{ route('campusfind_web.web.items.index') }}"
+                            variant="secondary"
+                            size="xl"
+                            class="w-full sm:w-auto"
+                        >
+                            @lang('campusfind_web_web::app.web.hero.secondary_action')
+                        </x-web::button>
+                    </div>
+
+                    <!-- Trust Indicators / Features -->
+                    <div class="mt-8 sm:mt-10 flex flex-wrap items-center gap-y-2.5 gap-x-2.5 sm:gap-x-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
+                            <span>@lang('campusfind_web_web::app.web.hero.trust_community')</span>
+                        </div>
+                        <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
+                            <span>@lang('campusfind_web_web::app.web.hero.trust_verify')</span>
+                        </div>
+                        <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
+                            <span>@lang('campusfind_web_web::app.web.hero.trust_staff')</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Visual Graphic Column (Left in RTL / order-1 lg:order-2) -->
+                <div class="order-1 lg:order-2 lg:col-span-6 flex justify-center">
                     <div class="relative w-full max-w-[440px] sm:max-w-[480px] bg-[#e6f4ee] dark:bg-[#185c54]/20 rounded-[2.5rem] p-6 sm:p-10 flex items-center justify-center min-h-[380px] sm:min-h-[440px] shadow-sm border border-[#185c54]/10 dark:border-[#185c54]/20">
                         
                         <!-- Main Item Card (Tilted) -->
@@ -116,66 +177,6 @@
                     </div>
                 </div>
 
-                <!-- Text Content Column (Right in visual / order-1 lg:order-2) -->
-                <div class="order-1 lg:order-2 lg:col-span-6 flex flex-col items-start text-start">
-                    
-                    <!-- Top Badge -->
-                    <x-web::badge variant="mint" size="lg" class="mb-6 ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10">
-                        @lang('campusfind_web_web::app.web.hero.tag')
-                    </x-web::badge>
-
-                    <!-- Main Headline -->
-                    <h1 class="text-4xl sm:text-5xl lg:text-[3.6rem] xl:text-[4rem] font-black tracking-tight text-slate-900 dark:text-white leading-[1.14] sm:leading-[1.12]">
-                        <span>@lang('campusfind_web_web::app.web.hero.headline_main')</span>
-                        <br>
-                        <span class="inline-block mt-1 text-[#185c54] dark:text-[#a3e4c8]">@lang('campusfind_web_web::app.web.hero.headline_sub')</span>
-                    </h1>
-
-                    <!-- Subheadline / Description -->
-                    <p class="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-xl">
-                        @lang('campusfind_web_web::app.web.hero.subheadline')
-                    </p>
-
-                    <!-- Action Buttons using Button Component -->
-                    <div class="mt-8 sm:mt-10 flex flex-wrap items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
-                        <x-web::button
-                            href="{{ route('campusfind_web.web.reports.lost') }}"
-                            variant="primary"
-                            size="xl"
-                            class="w-full sm:w-auto"
-                        >
-                            @lang('campusfind_web_web::app.web.hero.primary_action')
-                        </x-web::button>
-
-                        <x-web::button
-                            href="{{ route('campusfind_web.web.items.index') }}"
-                            variant="secondary"
-                            size="xl"
-                            class="w-full sm:w-auto"
-                        >
-                            @lang('campusfind_web_web::app.web.hero.secondary_action')
-                        </x-web::button>
-                    </div>
-
-                    <!-- Trust Indicators / Features -->
-                    <div class="mt-8 sm:mt-10 flex flex-wrap items-center gap-y-2.5 gap-x-2.5 sm:gap-x-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
-                            <span>@lang('campusfind_web_web::app.web.hero.trust_community')</span>
-                        </div>
-                        <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
-                            <span>@lang('campusfind_web_web::app.web.hero.trust_verify')</span>
-                        </div>
-                        <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[#185c54] dark:text-emerald-400 font-bold">✓</span>
-                            <span>@lang('campusfind_web_web::app.web.hero.trust_staff')</span>
-                        </div>
-                    </div>
-
-                </div>
             </div>
         </x-web::container>
     </section>
@@ -203,79 +204,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($recentItems as $item)
-                    <x-web::card variant="interactive" padding="none" class="overflow-hidden flex flex-col group">
-                        <div class="relative h-52 bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center overflow-hidden">
-                            @if ($item->hasImage && $item->imageUrl)
-                                <img src="{{ $item->imageUrl }}" alt="{{ $item->title }}" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            @else
-                                <div class="text-slate-400 dark:text-slate-600 flex flex-col items-center">
-                                    <svg class="h-12 w-12 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span class="text-xs mt-1 font-medium">@lang('campusfind_web_web::app.web.images')</span>
-                                </div>
-                            @endif
-
-                            @if ($item->category)
-                                <x-web::badge variant="mint" size="xs" class="absolute top-3 ltr:left-3 rtl:right-3 shadow-xs backdrop-blur-xs">
-                                    {{ $item->category }}
-                                </x-web::badge>
-                            @endif
-
-                            <x-web::badge variant="dark-blur" size="xs" class="absolute bottom-3 ltr:right-3 rtl:left-3">
-                                {{ $item->reference }}
-                            </x-web::badge>
-                        </div>
-
-                        <div class="p-6 flex-1 flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#185c54] dark:group-hover:text-[#a3e4c8] transition-colors">
-                                    {{ $item->title }}
-                                </h3>
-
-                                @if ($item->description)
-                                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                                        {{ $item->description }}
-                                    </p>
-                                @endif
-
-                                <div class="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                    @if ($item->foundLocation)
-                                        <div class="flex items-center gap-2">
-                                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            <span>{{ $item->foundLocation }}</span>
-                                        </div>
-                                    @endif
-
-                                    @if ($item->foundAt)
-                                        <div class="flex items-center gap-2">
-                                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            <span>{{ $item->foundAt->format('Y-m-d') }}</span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                <x-web::button
-                                    href="{{ route('campusfind_web.web.items.show', ['reference' => $item->reference]) }}"
-                                    variant="ghost"
-                                    size="sm"
-                                    class="text-[#185c54] dark:text-[#a3e4c8] inline-flex items-center gap-1.5"
-                                >
-                                    <span>@lang('campusfind_web_web::app.web.view_details')</span>
-                                    <svg class="h-4 w-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </x-web::button>
-                            </div>
-                        </div>
-                    </x-web::card>
+                    <x-web::campus.report-card :record="$item" />
                 @endforeach
             </div>
         </x-web::section>
@@ -290,43 +219,49 @@
     >
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
             <x-web::card variant="interactive" padding="lg">
-                <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] mb-5 ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        @lang('campusfind_web_web::app.web.highlights.fast.title')
+                    </h3>
                 </div>
-                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    @lang('campusfind_web_web::app.web.highlights.fast.title')
-                </h3>
-                <p class="mt-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     @lang('campusfind_web_web::app.web.highlights.fast.description')
                 </p>
             </x-web::card>
 
             <x-web::card variant="interactive" padding="lg">
-                <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] mb-5 ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        @lang('campusfind_web_web::app.web.highlights.modular.title')
+                    </h3>
                 </div>
-                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    @lang('campusfind_web_web::app.web.highlights.modular.title')
-                </h3>
-                <p class="mt-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     @lang('campusfind_web_web::app.web.highlights.modular.description')
                 </p>
             </x-web::card>
 
             <x-web::card variant="interactive" padding="lg">
-                <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] mb-5 ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                    </svg>
+                <div class="flex items-center gap-3.5 mb-4">
+                    <div class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] ring-4 ring-[#e6f4ee]/60 dark:ring-[#185c54]/10 shadow-2xs">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        @lang('campusfind_web_web::app.web.highlights.bilingual.title')
+                    </h3>
                 </div>
-                <h3 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    @lang('campusfind_web_web::app.web.highlights.bilingual.title')
-                </h3>
-                <p class="mt-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     @lang('campusfind_web_web::app.web.highlights.bilingual.description')
                 </p>
             </x-web::card>
@@ -340,7 +275,7 @@
         :subtitle="trans('campusfind_web_web::app.web.how_it_works')"
         class="border-t border-slate-200/80 dark:border-slate-800/80"
     >
-        <div class="mx-auto max-w-3xl space-y-4">
+        <div class="w-full space-y-4">
             <x-web::accordion :isActive="true">
                 <x-slot:header>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">

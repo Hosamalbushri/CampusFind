@@ -8,13 +8,13 @@
         <transition-group
             tag="div"
             name="flash-group"
-            enter-from-class="translate-y-full opacity-0"
+            enter-from-class="-translate-y-6 opacity-0 scale-95"
             enter-active-class="transform transition duration-300 ease-out"
-            enter-to-class="translate-y-0 opacity-100"
-            leave-from-class="translate-y-0 opacity-100"
-            leave-active-class="transform transition duration-300 ease-in"
-            leave-to-class="translate-y-full opacity-0"
-            class="fixed bottom-5 ltr:right-5 rtl:left-5 z-[10003] grid justify-items-end gap-3 font-cairo max-w-md w-full px-4 sm:px-0 pointer-events-none"
+            enter-to-class="translate-y-0 opacity-100 scale-100"
+            leave-from-class="translate-y-0 opacity-100 scale-100"
+            leave-active-class="transform transition duration-250 ease-in"
+            leave-to-class="-translate-y-6 opacity-0 scale-95"
+            class="fixed top-4 sm:top-5 ltr:right-4 rtl:left-4 sm:ltr:right-6 sm:rtl:left-6 z-[10003] flex flex-col items-end gap-3 font-cairo max-w-md w-[calc(100%-2rem)] sm:w-full pointer-events-none"
         >
             <x-web::flash-group.item />
         </transition-group>

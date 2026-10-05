@@ -5,32 +5,32 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center gap-1.5 font-bold rounded-full transition-all duration-150 select-none';
+    $baseClasses = 'inline-flex items-center gap-1.5 font-bold rounded-full transition-all duration-200 select-none tracking-tight';
 
     $sizeClasses = match ($size) {
-        'xs'    => 'px-2 py-0.5 text-[10px]',
-        'sm'    => 'px-2.5 py-0.5 text-[11px]',
-        'lg'    => 'px-4 py-1.5 text-sm',
-        default => 'px-3 py-1 text-xs',
+        'xs'    => 'px-2.5 py-1 text-[11px] leading-none',
+        'sm'    => 'px-3 py-1 text-xs leading-none',
+        'lg'    => 'px-4 py-2 text-sm leading-none',
+        default => 'px-3.5 py-1.5 text-xs leading-none', // md
     };
 
     $variantClasses = match ($variant) {
-        'primary'   => 'bg-[#185c54] text-white shadow-2xs',
-        'outline'   => 'border border-slate-300/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-xs',
-        'neutral'   => 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60',
-        'dark-blur' => 'bg-black/60 text-white backdrop-blur-xs border border-white/10 font-mono',
-        'success'   => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40',
-        'danger'    => 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/40',
-        'warning'   => 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/40',
-        default     => 'bg-[#e6f4ee] text-[#185c54] dark:bg-[#185c54]/30 dark:text-[#a3e4c8] border border-[#185c54]/10 dark:border-[#185c54]/30', // mint
+        'primary'   => 'bg-[#185c54] text-white border border-[#124640] shadow-2xs dark:bg-[#238378] dark:text-white dark:border-[#185c54]',
+        'outline'   => 'bg-white text-slate-900 border border-slate-300 shadow-2xs dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700',
+        'neutral'   => 'bg-slate-200 text-slate-900 border border-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700',
+        'dark-blur' => 'bg-slate-900 text-white border border-slate-700 shadow-sm dark:bg-slate-950 dark:text-white dark:border-slate-800',
+        'success'   => 'bg-emerald-50 text-emerald-950 border border-emerald-300 shadow-2xs dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-700',
+        'danger'    => 'bg-rose-50 text-rose-950 border border-rose-300 shadow-2xs dark:bg-rose-950 dark:text-rose-200 dark:border-rose-700',
+        'warning'   => 'bg-amber-50 text-amber-950 border border-amber-300 shadow-2xs dark:bg-amber-950 dark:text-amber-200 dark:border-amber-700',
+        default     => 'bg-[#e6f4ee] text-[#124640] border border-[#185c54]/30 dark:bg-[#185c54]/40 dark:text-[#a3e4c8] dark:border-[#185c54]/60', // mint
     };
 
     $dotColorClasses = match ($variant) {
         'primary' => 'bg-white',
-        'success' => 'bg-emerald-500',
-        'danger'  => 'bg-rose-500',
-        'warning' => 'bg-amber-500',
-        'neutral' => 'bg-slate-400',
+        'success' => 'bg-emerald-600 dark:bg-emerald-400',
+        'danger'  => 'bg-rose-600 dark:bg-rose-400',
+        'warning' => 'bg-amber-600 dark:bg-amber-400',
+        'neutral' => 'bg-slate-600 dark:bg-slate-400',
         default   => 'bg-[#185c54] dark:bg-[#a3e4c8]',
     };
 
@@ -39,7 +39,7 @@
 
 <span {{ $attributes->merge(['class' => $classes]) }}>
     @if ($dot)
-        <span class="h-1.5 w-1.5 rounded-full {{ $dotColorClasses }}" aria-hidden="true"></span>
+        <span class="h-1.5 w-1.5 rounded-full shrink-0 {{ $dotColorClasses }}" aria-hidden="true"></span>
     @endif
 
     {{ $slot }}

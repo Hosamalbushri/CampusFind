@@ -10,6 +10,9 @@ class ClaimStateService
     private const ALLOWED_TRANSITIONS = [
         ClaimStatus::SUBMITTED->value => [
             ClaimStatus::UNDER_REVIEW->value,
+            ClaimStatus::NEEDS_INFORMATION->value,
+            ClaimStatus::APPROVED->value,
+            ClaimStatus::REJECTED->value,
             ClaimStatus::WITHDRAWN->value,
         ],
         ClaimStatus::UNDER_REVIEW->value => [

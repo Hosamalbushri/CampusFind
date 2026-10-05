@@ -15,6 +15,8 @@ readonly class PublicLostReportData implements Arrayable, JsonSerializable
         public ?string $lostLocation,
         public ?DateTimeInterface $lostAt,
         public ?string $description,
+        public ?string $imageUrl = null,
+        public bool $hasImage = false,
     ) {}
 
     public function toArray(): array
@@ -26,6 +28,8 @@ readonly class PublicLostReportData implements Arrayable, JsonSerializable
             'lost_location' => $this->lostLocation,
             'lost_at' => $this->lostAt?->format('Y-m-d H:i:s'),
             'description' => $this->description,
+            'image_url' => $this->imageUrl,
+            'has_image' => $this->hasImage,
         ];
     }
 

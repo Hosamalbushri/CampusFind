@@ -75,7 +75,7 @@ class StudentFoundResponseApplicationService
             ): FoundReportResponse {
                 $report = LostReport::query()->lockForUpdate()->findOrFail($lostReportId);
 
-                if ($report->status !== ReportStatus::ACTIVE || $report->resolved_found_item_id !== null) {
+                if (! in_array($report->status, [ReportStatus::ACTIVE, ReportStatus::DRAFT], true) || $report->resolved_found_item_id !== null) {
                     throw new DomainException('Only an unresolved active lost report can receive found responses.');
                 }
 

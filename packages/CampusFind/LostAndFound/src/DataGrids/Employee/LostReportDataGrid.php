@@ -153,14 +153,14 @@ class LostReportDataGrid extends DataGrid
     {
         $actor = $this->actor();
 
-        if ($this->can($actor, 'lost_found.matches.view')) {
-            $this->addAction([
-                'icon' => 'icon-search',
-                'title' => trans('lost_found::app.employee.matches.view_for_report'),
-                'method' => 'GET',
-                'url' => fn ($row) => route('admin.lost_found.matches.index', ['lost_report_id' => (int) $row->id]),
-            ]);
-        }
+//        if ($this->can($actor, 'lost_found.matches.view')) {
+//            $this->addAction([
+//                'icon' => 'icon-search',
+//                'title' => trans('lost_found::app.employee.matches.view_for_report'),
+//                'method' => 'GET',
+//                'url' => fn ($row) => route('admin.lost_found.matches.index', ['lost_report_id' => (int) $row->id]),
+//            ]);
+//        }
 
         if ($this->can($actor, 'lost_found.items.edit')) {
             $this->addAction([

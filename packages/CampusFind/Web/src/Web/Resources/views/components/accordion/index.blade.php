@@ -8,9 +8,25 @@
         is-active="{{ filter_var($isActive, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false' }}"
         {{ $attributes }}
     >
-        <x-web::shimmer.accordion />
+        <div class="hidden" aria-hidden="true"><x-web::shimmer.accordion /></div>
 
-        @isset($header)
+        <!-- Static SSR fallback to prevent refresh flicker before Vue mounts -->
+        <div class="flex w-full items-center justify-between p-4 sm:p-5 text-start select-none">
+            <div class="flex-1">
+                @if (isset($header) && ! $header->isEmpty())
+                    {{ $header }}
+                @elseif ($title)
+                    <h3 class="text-base font-extrabold text-slate-900 dark:text-white">{{ $title }}</h3>
+                @endif
+            </div>
+            <span class="ltr:ml-4 rtl:mr-4 shrink-0 text-slate-400">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </span>
+        </div>
+
+        @if (isset($header) && ! $header->isEmpty())
             <template v-slot:header="{ toggle, isOpen }">
                 <div
                     {{ $header->attributes->merge(['class' => 'flex w-full items-center justify-between p-5 text-start cursor-pointer select-none hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors focus:outline-none focus:ring-4 focus:ring-inset focus:ring-[#185c54]/20']) }}
@@ -34,33 +50,35 @@
                     </span>
                 </div>
             </template>
-        @elseif($title)
-            <template v-slot:header="{ toggle, isOpen }">
-                <div
-                    class="flex w-full items-center justify-between p-5 text-start cursor-pointer select-none hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors focus:outline-none focus:ring-4 focus:ring-inset focus:ring-[#185c54]/20"
-                    @click="toggle"
-                    role="button"
-                    tabindex="0"
-                    :aria-expanded="isOpen ? 'true' : 'false'"
-                    @keydown.enter.prevent="toggle"
-                    @keydown.space.prevent="toggle"
-                >
-                    <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
-                        {{ $title }}
-                    </h3>
-
-                    <span
-                        :class="`ltr:ml-4 rtl:mr-4 shrink-0 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`"
+        @else
+            @if ($title)
+                <template v-slot:header="{ toggle, isOpen }">
+                    <div
+                        class="flex w-full items-center justify-between p-5 text-start cursor-pointer select-none hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors focus:outline-none focus:ring-4 focus:ring-inset focus:ring-[#185c54]/20"
+                        @click="toggle"
+                        role="button"
+                        tabindex="0"
+                        :aria-expanded="isOpen ? 'true' : 'false'"
+                        @keydown.enter.prevent="toggle"
+                        @keydown.space.prevent="toggle"
                     >
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </span>
-                </div>
-            </template>
-        @endisset
+                        <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+                            {{ $title }}
+                        </h3>
 
-        @isset($content)
+                        <span
+                            :class="`ltr:ml-4 rtl:mr-4 shrink-0 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`"
+                        >
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </span>
+                    </div>
+                </template>
+            @endif
+        @endif
+
+        @if (isset($content) && ! $content->isEmpty())
             <template v-slot:content="{ isOpen }">
                 <div
                     {{ $content->attributes->merge(['class' => 'border-t border-slate-100 dark:border-slate-800/80 p-5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed']) }}
@@ -69,16 +87,18 @@
                     {{ $content }}
                 </div>
             </template>
-        @elseif(!empty((string) $slot))
-            <template v-slot:content="{ isOpen }">
-                <div
-                    class="border-t border-slate-100 dark:border-slate-800/80 p-5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed"
-                    v-show="isOpen"
-                >
-                    {{ $slot }}
-                </div>
-            </template>
-        @endisset
+        @else
+            @if (!empty((string) $slot))
+                <template v-slot:content="{ isOpen }">
+                    <div
+                        class="border-t border-slate-100 dark:border-slate-800/80 p-5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed"
+                        v-show="isOpen"
+                    >
+                        {{ $slot }}
+                    </div>
+                </template>
+            @endif
+        @endif
     </v-accordion>
 </div>
 

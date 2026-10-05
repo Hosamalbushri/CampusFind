@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'report_type' => 'Loại báo cáo',
+    'types' => [
+        'found' => 'Món đồ tìm thấy',
+        'lost' => 'Báo cáo mất',
+        'claim' => 'Yêu cầu',
+    ],
     'acl' => [
         'management' => 'Quản lý đồ thất lạc',
         'items' => 'Quản lý đồ tìm thấy',
@@ -71,6 +77,7 @@ return [
         ],
         'claims' => [
             'title' => 'Yêu cầu nhận đồ',
+            'reviewer' => 'Người kiểm duyệt',
             'view_claims' => 'Xem yêu cầu',
             'view_detail' => 'Xem chi tiết',
             'detail_title' => 'Yêu cầu #:id',
