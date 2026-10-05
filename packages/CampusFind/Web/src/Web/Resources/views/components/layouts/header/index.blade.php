@@ -52,19 +52,18 @@
                 </svg>
             </a>
 
-            <!-- Language Switcher Dropdown -->
-            <div class="inline-block">
+            <!-- Language Switcher Dropdown (Desktop) -->
+            <div class="hidden sm:inline-block">
                 <x-web::dropdown position="bottom-{{ in_array(app()->getLocale(), ['fa', 'ar']) ? 'left' : 'right' }}">
                     <x-slot:toggle>
                         <button
                             type="button"
-                            class="whitespace-nowrap inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100/90 hover:bg-slate-200/80 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-slate-700/90 transition-all border border-slate-200/70 dark:border-slate-700/70 focus:outline-none select-none group"
+                            class="whitespace-nowrap inline-flex items-center gap-1.5 h-9 px-3 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100/90 hover:bg-slate-200/80 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:bg-slate-700/90 transition-all border border-slate-200/70 dark:border-slate-700/70 focus:outline-none select-none group"
                         >
                             <svg class="h-3.5 w-3.5 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                             </svg>
-                            <span class="hidden sm:inline">{{ $currentLocaleData['native'] }}</span>
-                            <span class="sm:hidden font-extrabold uppercase text-[11px]">{{ app()->getLocale() === 'ar' ? 'AR' : 'EN' }}</span>
+                            <span>{{ $currentLocaleData['native'] }}</span>
                             <svg class="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600 dark:text-slate-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>

@@ -21,6 +21,7 @@ return [
             'dismiss_alert' => 'إخفاء التنبيه',
             'toggle_theme' => 'تبديل المظهر اللوني',
             'toggle_navigation' => 'تبديل قائمة التنقل',
+            'back_to_top' => 'الرجوع إلى الأعلى',
         ],
         'browse_items' => 'تصفح المعثورات',
         'how_it_works' => 'كيف يعمل النظام',

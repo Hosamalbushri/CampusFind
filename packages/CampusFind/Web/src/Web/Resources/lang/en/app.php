@@ -21,6 +21,7 @@ return [
             'dismiss_alert' => 'Dismiss alert',
             'toggle_theme' => 'Toggle color theme',
             'toggle_navigation' => 'Toggle navigation',
+            'back_to_top' => 'Back to top',
         ],
         'browse_items' => 'Browse Found Items',
         'how_it_works' => 'How It Works',
