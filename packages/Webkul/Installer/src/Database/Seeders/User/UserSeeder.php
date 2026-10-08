@@ -21,8 +21,8 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'id' => 1,
             'name' => 'Example Admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('admin123'),
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123456'),
             // 'api_token' => Str::random(80),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),

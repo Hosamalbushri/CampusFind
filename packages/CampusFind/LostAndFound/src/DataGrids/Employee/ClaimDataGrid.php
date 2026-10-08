@@ -87,15 +87,15 @@ class ClaimDataGrid extends DataGrid
         }
     }
 
-    public function prepareActions(): void
-    {
-        $this->addAction([
-            'icon'   => 'icon-eye',
-            'title'  => trans('lost_found::app.employee.claims.view_detail'),
-            'method' => 'GET',
-            'url'    => fn ($row) => route('admin.lost_found.claims.show', (int) $row->id),
-        ]);
-    }
+//    public function prepareActions(): void
+//    {
+//        $this->addAction([
+//            'icon'   => 'icon-eye',
+//            'title'  => trans('lost_found::app.employee.claims.view_detail'),
+//            'method' => 'GET',
+//            'url'    => fn ($row) => route('admin.lost_found.claims.show', (int) $row->id),
+//        ]);
+//    }
 
     protected function validatedRequest(): array
     {

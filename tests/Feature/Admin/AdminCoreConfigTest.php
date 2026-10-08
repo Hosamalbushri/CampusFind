@@ -100,7 +100,7 @@ class AdminCoreConfigTest extends TestCase
         $brandColorField = $systemConfig->getConfigField('general.settings.menu_color.brand_color');
         $this->assertNotNull($brandColorField);
         $this->assertSame('brand_color', $brandColorField['name']);
-        $this->assertSame('#0E90D9', $brandColorField['default']);
+        $this->assertSame('#08796B', $brandColorField['default']);
     }
 
     public function test_system_config_is_safe_when_core_config_is_null_or_empty(): void
@@ -117,7 +117,7 @@ class AdminCoreConfigTest extends TestCase
 
     public function test_core_get_config_data_returns_default_when_not_in_db_and_db_value_when_persisted(): void
     {
-        $this->assertSame('#0E90D9', core()->getConfigData('general.settings.menu_color.brand_color'));
+        $this->assertSame('#08796B', core()->getConfigData('general.settings.menu_color.brand_color'));
         $this->assertSame('Dashboard', core()->getConfigData('general.settings.menu.dashboard'));
 
         CoreConfig::create([

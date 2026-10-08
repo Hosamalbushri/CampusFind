@@ -55,7 +55,7 @@
     @endif
 
     @php
-        $menuBrand = core()->getConfigData('general.settings.menu_color.brand_color') ?? '#0E90D9';
+        $menuBrand = core()->getConfigData('general.settings.menu_color.brand_color') ?? '#08796B';
         $shopPrimary = core()->getConfigData('general.store.shop.primary_color')
             ?: core()->getConfigData('general.design.shop.primary_color');
         $shopAccent = core()->getConfigData('general.store.shop.accent_color')

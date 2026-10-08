@@ -21,7 +21,7 @@ class Installer extends Command
      *
      * @var string
      */
-    protected $signature = 'krayin-crm:install
+    protected $signature = 'compus-find:install
         { --skip-env-check : Skip env check. }
         { --skip-admin-creation : Skip admin creation. }';
 
@@ -30,7 +30,7 @@ class Installer extends Command
      *
      * @var string
      */
-    protected $description = 'krayin installer.';
+    protected $description = 'compus-find installer.';
 
     /**
      * Locales list.
@@ -137,7 +137,7 @@ class Installer extends Command
 
         $this->warn('Step: Seeding basic data for Krayin kickstart...');
         $this->info(app(KrayinDatabaseSeeder::class)->run([
-            'locale' => $applicationDetails['locale'] ?? 'en',
+            'locale' => $applicationDetails['locale'] ?? 'ar',
             'currency' => $applicationDetails['currency'] ?? 'USD',
         ]));
 
@@ -334,7 +334,7 @@ class Installer extends Command
 
         $adminEmail = text(
             label: 'Enter the email address of the admin user',
-            default: 'admin@example.com',
+            default: 'admin@gmail.com',
             validate: fn (string $value) => match (true) {
                 ! filter_var($value, FILTER_VALIDATE_EMAIL) => 'The email address you entered is not valid please try again.',
                 default => null
@@ -343,7 +343,7 @@ class Installer extends Command
 
         $adminPassword = text(
             label: 'Configure the password for the admin user',
-            default: 'admin123',
+            default: '123456',
             required: true
         );
 
